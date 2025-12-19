@@ -17,10 +17,7 @@ public class CapacityAlertController {
         this.capacityAnalysisService = capacityAnalysisService;
     }
 
-    /**
-     * Triggers capacity analysis and generates alerts if capacity
-     * drops below configured threshold.
-     */
+   
     @GetMapping("/analyze")
     public ResponseEntity<CapacityAnalysisResultDto> analyzeAndGenerateAlerts(
             @RequestParam String team,
