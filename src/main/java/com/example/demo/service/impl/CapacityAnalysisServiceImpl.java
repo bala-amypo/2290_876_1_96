@@ -1,9 +1,10 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.model.LeaveRequest;
+
 import com.example.demo.service.CapacityAnalysisService;
 import com.example.demo.service.LeaveRequestService;
 import org.springframework.stereotype.Service;
+import com.example.demo.dto.LeaveRequestDto;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
