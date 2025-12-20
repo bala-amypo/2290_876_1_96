@@ -9,19 +9,55 @@ public class LeaveRequestDto {
     private LocalDate endDate;
     private String type;
     private String reason;
+    private String status;
 
-    public Long getEmployeeId() { return employeeId; }
-    public void setEmployeeId(Long employeeId) { this.employeeId = employeeId; }
+    // ===== getters & setters =====
 
-    public LocalDate getStartDate() { return startDate; }
-    public void setStartDate(LocalDate startDate) { this.startDate = startDate; }
+    public Long getEmployeeId() {
+        return employeeId;
+    }
 
-    public LocalDate getEndDate() { return endDate; }
-    public void setEndDate(LocalDate endDate) { this.endDate = endDate; }
+    public void setEmployeeId(Long employeeId) {
+        this.employeeId = employeeId;
+    }
 
-    public String getType() { return type; }
-    public void setType(String type) { this.type = type; }
+    public LocalDate getStartDate() {
+        return startDate;
+    }
 
-    public String getReason() { return reason; }
-    public void setReason(String reason) { this.reason = reason; }
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }
