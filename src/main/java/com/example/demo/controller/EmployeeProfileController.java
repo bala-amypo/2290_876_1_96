@@ -2,7 +2,6 @@ package com.example.demo.controller;
 
 import com.example.demo.model.EmployeeProfile;
 import com.example.demo.service.EmployeeProfileService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,16 +16,8 @@ public class EmployeeProfileController {
         this.employeeService = employeeService;
     }
 
-    @PostMapping
-    public ResponseEntity<EmployeeProfile> create(
-            @RequestBody EmployeeProfile profile
-    ) {
-        return ResponseEntity.ok(employeeService.create(profile));
+    @GetMapping("/active/{team}")
+    public List<EmployeeProfile> getActiveEmployees(@PathVariable String team) {
+        return employeeService.getActiveEmployeesByTeam(team);
     }
-
-    @GetMapping("/{team}")
-public List<EmployeeProfile> getActiveEmployees(@PathVariable String team) {
-    return employeeService.getActiveEmployeesByTeam(team);
-}
-
 }

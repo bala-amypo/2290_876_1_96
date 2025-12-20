@@ -20,14 +20,13 @@ public class CapacityAlertController {
         this.analysisService = analysisService;
     }
 
-    @GetMapping("/{teamName}")
-    public ResponseEntity<List<CapacityAlert>> analyze(
-            @PathVariable String teamName,
-            @RequestParam LocalDate start,
-            @RequestParam LocalDate end
-    ) {
-        return ResponseEntity.ok(
-                analysisService.analyzeCapacity(teamName, start, end)
-        );
-    }
+    @GetMapping("/analyze")
+    public List<String> analyze(
+        @RequestParam String teamName,
+        @RequestParam LocalDate startDate,
+        @RequestParam LocalDate endDate) {
+
+    return analysisService.analyzeCapacity(teamName, startDate, endDate);
+}
+
 }
