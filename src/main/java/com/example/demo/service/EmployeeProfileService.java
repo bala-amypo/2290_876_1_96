@@ -1,21 +1,23 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.EmployeeProfileDto;
 import com.example.demo.model.EmployeeProfile;
+
 import java.util.List;
 
 public interface EmployeeProfileService {
 
     EmployeeProfile create(EmployeeProfileDto dto);
 
-    EmployeeProfile update(long id, EmployeeProfileDto dto);
+    EmployeeProfile update(Long id, EmployeeProfileDto dto);
 
-    void deactivate(long id);
+    void deactivate(Long id);
 
-    boolean isActive(long id);
+    boolean isActive(Long id);
 
-    EmployeeProfile getById(long id);
+    EmployeeProfile getById(Long id);
 
-    EmployeeProfile getByTeam(String team);
+    List<EmployeeProfile> getByTeam(String team);
 
     List<EmployeeProfile> getAll();
 }
