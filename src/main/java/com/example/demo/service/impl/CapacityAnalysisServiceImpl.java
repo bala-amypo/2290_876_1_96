@@ -47,4 +47,16 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
             LocalDate end) {
         getOverlappingDates(teamName, start, end);
     }
+    public CapacityAnalysisServiceImpl(
+        TeamCapacityConfigRepository teamCapacityConfigRepository,
+        EmployeeProfileRepository employeeProfileRepository,
+        LeaveRequestRepository leaveRequestRepository,
+        CapacityAlertRepository capacityAlertRepository
+) {
+    this.teamCapacityConfigRepository = teamCapacityConfigRepository;
+    this.employeeProfileRepository = employeeProfileRepository;
+    this.leaveRequestRepository = leaveRequestRepository;
+    this.capacityAlertRepository = capacityAlertRepository;
+}
+
 }
