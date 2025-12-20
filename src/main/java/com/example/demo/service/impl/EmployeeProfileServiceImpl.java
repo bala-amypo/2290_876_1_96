@@ -3,40 +3,68 @@ package com.example.demo.service.impl;
 import com.example.demo.dto.EmployeeProfileDto;
 import com.example.demo.model.EmployeeProfile;
 import com.example.demo.repository.EmployeeProfileRepository;
+import com.example.demo.service.EmployeeProfileService;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Service
-public class EmployeeProfileServiceImpl {
+public class EmployeeProfileServiceImpl implements EmployeeProfileService {
 
-    private final EmployeeProfileRepository repo;
+    private final EmployeeProfileRepository repository;
 
-    public EmployeeProfileServiceImpl(EmployeeProfileRepository repo) {
-        this.repo = repo;
+    public EmployeeProfileServiceImpl(EmployeeProfileRepository repository) {
+        this.repository = repository;
     }
 
+    
+    @Override
     public EmployeeProfile create(EmployeeProfileDto dto) {
 
-        EmployeeProfile e = new EmployeeProfile(
-                null,
-                dto.getEmployeeId(),
-                dto.getFullName(),
-                dto.getEmail(),
-                dto.getTeamName(),
-                dto.getRole(),
-                true
-        );
+        EmployeeProfile employee = new EmployeeProfile();
 
-        return repo.save(e);
+        employee.setEmployeeId(dto.getEmployeeId());
+        employee.setFullName(dto.getFullName());
+        employee.setEmail(dto.getEmail());
+        employee.setTeamName(dto.getTeamName());
+        employee.setRole(dto.getRole());
+
+        
+        employee.setActive(true);
+        employee.setCreatedAt(LocalDateTime.now());
+
+        return repository.save(employee);
     }
 
-    public EmployeeProfile update(EmployeeProfileDto dto) {
+    
+    @Override
+    public EmployeeProfile update(Long id, EmployeeProfileDto dto) {
 
-        EmployeeProfile e = repo.findById(dto.getId())
-                .orElseThrow(() -> new RuntimeException("Not found"));
+        EmployeeProfile employee = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
 
-        e.setFullName(dto.getFullName());
-        e.setActive(true);
+        employee.setEmployeeId(dto.getEmployeeId());
+        employee.setFullName(dto.getFullName());
+        employee.setEmail(dto.getEmail());
+        employee.setTeamName(dto.getTeamName());
+        employee.setRole(dto.getRole());
 
-        return repo.save(e);
+        return repository.save(employee);
+    }
+
+    
+    @Override
+    public EmployeeProfile getById(Long id) {
+
+        return repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+    }
+
+    
+    @Override
+    public List<EmployeeProfile> getByTeam(String teamName) {
+
+        return repository.findByTeamName(teamName);
     }
 }
