@@ -1,7 +1,6 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.EmployeeProfileDto;
-import com.example.demo.model.EmployeeProfile;
 import com.example.demo.service.EmployeeProfileService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
@@ -20,36 +19,33 @@ public class EmployeeProfileController {
         this.service = service;
     }
 
-    
     @PostMapping
-    public ResponseEntity<EmployeeProfile> createEmployee(
+    public ResponseEntity<EmployeeProfileDto> createEmployee(
             @RequestBody EmployeeProfileDto dto) {
-
         return ResponseEntity.ok(service.create(dto));
     }
 
-    
     @PutMapping("/{id}")
-    public ResponseEntity<EmployeeProfile> updateEmployee(
+    public ResponseEntity<EmployeeProfileDto> updateEmployee(
             @PathVariable Long id,
             @RequestBody EmployeeProfileDto dto) {
-
         return ResponseEntity.ok(service.update(id, dto));
     }
 
-
     @GetMapping("/{id}")
-    public ResponseEntity<EmployeeProfile> getEmployee(
+    public ResponseEntity<EmployeeProfileDto> getEmployee(
             @PathVariable Long id) {
-
         return ResponseEntity.ok(service.getById(id));
     }
 
-    
     @GetMapping("/team/{teamName}")
-    public ResponseEntity<List<EmployeeProfile>> getByTeam(
+    public ResponseEntity<List<EmployeeProfileDto>> getByTeam(
             @PathVariable String teamName) {
-
         return ResponseEntity.ok(service.getByTeam(teamName));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<EmployeeProfileDto>> getAll() {
+        return ResponseEntity.ok(service.getAll());
     }
 }

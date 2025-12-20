@@ -2,11 +2,21 @@ package com.example.demo.dto;
 
 public class EmployeeProfileDto {
 
+    private Long id;
     private String employeeId;
     private String fullName;
     private String email;
     private String teamName;
     private String role;
+    private Boolean active;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getEmployeeId() {
         return employeeId;
@@ -46,5 +56,17 @@ public class EmployeeProfileDto {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public Boolean isActive() {
+        return active;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 }
