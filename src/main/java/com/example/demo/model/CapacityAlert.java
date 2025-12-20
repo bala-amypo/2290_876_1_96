@@ -25,10 +25,4 @@ public class CapacityAlert {
         this.severity = severity;
         this.message = message;
     }
-
-    public Long getId() { return id; }
-    public String getTeamName() { return teamName; }
-    public LocalDate getDate() { return date; }
-    public String getSeverity() { return severity; }
-    public String getMessage() { return message; }
 }

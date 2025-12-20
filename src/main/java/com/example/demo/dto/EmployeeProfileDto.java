@@ -1,13 +1,10 @@
 package com.example.demo.dto;
 
 public class EmployeeProfileDto {
-
-    private String name;
-    private String team;
-
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-
-    public String getTeam() { return team; }
-    public void setTeam(String team) { this.team = team; }
+    public Long id;
+    public String employeeId;
+    public String fullName;
+    public String email;
+    public String teamName;
+    public String role;
 }
