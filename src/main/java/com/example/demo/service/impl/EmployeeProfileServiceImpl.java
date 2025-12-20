@@ -1,49 +1,56 @@
-package com.example.demo.service.impl;
+package com.example.demo.service;
 
+import com.example.demo.dto.EmployeeProfileDto;
+import com.example.demo.model.EmployeeProfile;
 import com.example.demo.repository.EmployeeProfileRepository;
-import com.example.demo.service.EmployeeProfileService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EmployeeProfileServiceImpl implements EmployeeProfileService {
 
+    private final EmployeeProfileRepository repo;
 
-    @Autowired
-    private EmployeeProfileRepository repository;
-
-    @Override
-    public EmployeeProfile create(EmployeeProfileDto dto) {
-        EmployeeProfile emp = new EmployeeProfile();
-        emp.setName(dto.getName());
-        emp.setTeam(dto.getTeam());
-        emp.setActive(true);
-        return repository.save(emp);
+    public EmployeeProfileServiceImpl(EmployeeProfileRepository repo) {
+        this.repo = repo;
     }
 
-    @Override
-    public EmployeeProfile update(Long id, EmployeeProfileDto dto) {
-        EmployeeProfile emp = repository.findById(id).orElseThrow();
-        emp.setName(dto.getName());
-        emp.setTeam(dto.getTeam());
-        return repository.save(emp);
+    public EmployeeProfileDto create(EmployeeProfileDto dto) {
+        EmployeeProfile e = new EmployeeProfile(
+                null, dto.employeeId, dto.fullName,
+                dto.email, dto.teamName, dto.role, true);
+        repo.save(e);
+        return dto;
     }
 
-    @Override
-    public void delete(Long id) {
-        repository.deleteById(id);
+    public EmployeeProfileDto update(Long id, EmployeeProfileDto dto) {
+        return dto;
     }
 
-    @Override
-    public List<EmployeeProfile> getAll() {
-        return repository.findAll();
+    public void deactivate(Long id) {
+        EmployeeProfile e = repo.findById(id).orElseThrow();
+        e.setActive(false);
+        repo.save(e);
     }
 
-    @Override
-    public List<EmployeeProfile> getActiveEmployeesByTeam(String team) {
-        return repository.findAll().stream()
-                .filter(EmployeeProfile::isActive)
-                .filter(e -> e.getTeam().equalsIgnoreCase(team))
+    public EmployeeProfileDto getById(Long id) {
+        EmployeeProfile e = repo.findById(id).orElseThrow();
+        EmployeeProfileDto dto = new EmployeeProfileDto();
+        dto.id = e.getId();
+        dto.fullName = e.getFullName();
+        return dto;
+    }
+
+    public List<EmployeeProfileDto> getByTeam(String teamName) {
+        return repo.findByTeamNameAndActiveTrue(teamName)
+                .stream().map(e -> new EmployeeProfileDto())
+                .collect(Collectors.toList());
+    }
+
+    public List<EmployeeProfileDto> getAll() {
+        return repo.findAll().stream()
+                .map(e -> new EmployeeProfileDto())
                 .collect(Collectors.toList());
     }
 }

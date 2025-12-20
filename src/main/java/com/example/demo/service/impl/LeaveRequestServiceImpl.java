@@ -1,36 +1,36 @@
-package com.example.demo.service.impl;
+package com.example.demo.service;
 
 import com.example.demo.dto.LeaveRequestDto;
 import com.example.demo.model.LeaveRequest;
 import com.example.demo.repository.LeaveRequestRepository;
-import com.example.demo.service.LeaveRequestService;
-
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @Service
 public class LeaveRequestServiceImpl implements LeaveRequestService {
 
-    @Autowired
-    private LeaveRequestRepository repository;
+    private final LeaveRequestRepository repo;
 
-    @Override
-    public LeaveRequest applyLeave(LeaveRequest lr) {
-        lr.setStatus("PENDING");
-        return repository.save(lr);
+    public LeaveRequestServiceImpl(LeaveRequestRepository repo) {
+        this.repo = repo;
     }
 
-    @Override
-    public LeaveRequest approveLeave(Long id) {
-        LeaveRequest lr = repository.findById(id).orElseThrow();
+    public LeaveRequestDto create(LeaveRequestDto dto) {
+        return dto;
+    }
+
+    public void approve(Long id) {
+        LeaveRequest lr = repo.findById(id).orElseThrow();
         lr.setStatus("APPROVED");
-        return repository.save(lr);
+        repo.save(lr);
     }
 
-    @Override
-    public List<LeaveRequest> getAll() {
-        return repository.findAll();
+    public void reject(Long id) {
+        LeaveRequest lr = repo.findById(id).orElseThrow();
+        lr.setStatus("REJECTED");
+        repo.save(lr);
+    }
+
+    public java.util.List<LeaveRequestDto> getByEmployee(Long employeeId) {
+        return java.util.List.of();
     }
 }
