@@ -14,6 +14,9 @@ public class UserAccount {
 
     private String password;
 
+    // ✅ ADD THIS FIELD
+    private String role;
+
     public Long getId() {
         return id;
     }
@@ -32,5 +35,14 @@ public class UserAccount {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    // ✅ REQUIRED BY CustomUserDetailsService
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }
