@@ -1,39 +1,21 @@
-package com.example.demo.dto;
+package com.example.demo.service;
+
+import com.example.demo.dto.CapacityAnalysisResultDto;
 
 import java.time.LocalDate;
-import java.util.Map;
+import java.util.List;
 
-public class CapacityAnalysisResultDto {
+public interface CapacityAnalysisService {
 
-    private boolean risky;
-    private Map<LocalDate, Double> capacityByDate;
+    List<LocalDate> getOverlappingDates(
+            String teamName,
+            LocalDate start,
+            LocalDate end
+    );
 
-    // ✅ REQUIRED no-args constructor
-    public CapacityAnalysisResultDto() {
-    }
-
-    // ✅ REQUIRED by tests & service
-    public CapacityAnalysisResultDto(
-            boolean risky,
-            Map<LocalDate, Double> capacityByDate
-    ) {
-        this.risky = risky;
-        this.capacityByDate = capacityByDate;
-    }
-
-    public boolean isRisky() {
-        return risky;
-    }
-
-    public void setRisky(boolean risky) {
-        this.risky = risky;
-    }
-
-    public Map<LocalDate, Double> getCapacityByDate() {
-        return capacityByDate;
-    }
-
-    public void setCapacityByDate(Map<LocalDate, Double> capacityByDate) {
-        this.capacityByDate = capacityByDate;
-    }
+    CapacityAnalysisResultDto analyzeTeamCapacity(
+            String teamName,
+            LocalDate start,
+            LocalDate end
+    );
 }
