@@ -1,12 +1,12 @@
 package com.example.demo.repository;
 
-import com.example.demo.model.TeamCapacityRule;
+import com.example.demo.model.TeamCapacityConfig;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
 public interface TeamCapacityConfigRepository
-        extends JpaRepository<TeamCapacityRule, Long> {
+        extends JpaRepository<TeamCapacityConfig, Long> {
 
-    Optional<TeamCapacityRule> findByTeamName(String teamName);
+    Optional<TeamCapacityConfig> findByTeamName(String teamName);
 }
