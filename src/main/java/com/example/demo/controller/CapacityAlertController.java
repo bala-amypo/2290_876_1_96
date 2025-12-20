@@ -1,21 +1,18 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.CapacityAlert;
-import com.example.demo.service.CapacityAnalysisService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/capacity")
+@RequestMapping("/api/capacity-alerts")
 public class CapacityAlertController {
 
-    @Autowired
-    private CapacityAnalysisService capacityAnalysisService;
+    @PostMapping("/analyze")
+    public String analyze() {
+        return "Analysis triggered";
+    }
 
-    @GetMapping("/alerts")
-    public List<CapacityAlert> getAlerts() {
-        return capacityAnalysisService.generateAlerts();
+    @GetMapping("/team/{teamName}")
+    public String getAlerts(@PathVariable String teamName) {
+        return "Alerts fetched";
     }
 }
