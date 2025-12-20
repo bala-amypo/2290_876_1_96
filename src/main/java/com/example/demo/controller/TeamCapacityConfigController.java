@@ -8,7 +8,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/capacity-rules")
-public class TeamCapacityRuleController {
+public class TeamCapacityConfigController {
 
     private final TeamCapacityRuleService service;
 
