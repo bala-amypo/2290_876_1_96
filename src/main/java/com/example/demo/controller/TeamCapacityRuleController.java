@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/capacity-config")
-public class TeamCapacityConfigController {
+public class TeamCapacityRuleController {
 
     private final TeamCapacityRuleService ruleService;
 
