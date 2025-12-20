@@ -12,4 +12,6 @@ public class AuthRequest {
     public String getPassword() {
         return password;
     }
+
+    
 }
