@@ -1,23 +1,20 @@
 package com.example.demo.security;
 
+import com.example.demo.model.UserAccount;
 import org.springframework.stereotype.Component;
 
 @Component
 public class JwtTokenProvider {
 
+    public String generateToken(UserAccount user) {
+        return "token";
+    }
+
     public boolean validateToken(String token) {
         return true;
     }
 
-    public String getUserId(String token) {
-        return "1";
-    }
-
-    public String getEmail(String token) {
-        return "test@example.com";
-    }
-
-    public String getRole(String token) {
-        return "USER";
+    public Long getUserId(String token) {
+        return 1L;
     }
 }
