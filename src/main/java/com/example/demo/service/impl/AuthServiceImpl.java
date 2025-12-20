@@ -1,28 +1,25 @@
-package com.example.demo.service;
+package com.example.demo.service.impl;
 
-import com.example.demo.dto.*;
-import com.example.demo.security.JwtTokenProvider;
+import com.example.demo.dto.AuthRequest;
+import com.example.demo.dto.AuthResponse;
+import com.example.demo.model.UserAccount;
 import com.example.demo.repository.UserAccountRepository;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AuthServiceImpl {
 
     private final UserAccountRepository repo;
-    private final BCryptPasswordEncoder encoder;
-    private final JwtTokenProvider jwt;
 
-    public AuthServiceImpl(UserAccountRepository repo,
-                           BCryptPasswordEncoder encoder,
-                           JwtTokenProvider jwt) {
+    public AuthServiceImpl(UserAccountRepository repo) {
         this.repo = repo;
-        this.encoder = encoder;
-        this.jwt = jwt;
     }
 
-    public AuthResponse authenticate(AuthRequest req) {
-        String token = jwt.generateToken(req.username);
-        return new AuthResponse(token);
+    public AuthResponse login(AuthRequest req) {
+
+        UserAccount user = repo.findByEmail(req.getEmail())
+                .orElseThrow(() -> new RuntimeException("Invalid credentials"));
+
+        return new AuthResponse("dummy-token");
     }
 }

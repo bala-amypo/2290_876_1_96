@@ -1,7 +1,6 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
-import java.util.List;
 
 @Entity
 public class EmployeeProfile {
@@ -15,20 +14,20 @@ public class EmployeeProfile {
     private String email;
     private String teamName;
     private String role;
-
-    @OneToMany
-    private List<EmployeeProfile> colleagues;
+    private boolean active;
 
     public EmployeeProfile() {}
 
     public EmployeeProfile(Long id, String employeeId, String fullName,
-                           String email, String teamName, String role) {
+                           String email, String teamName, String role,
+                           boolean active) {
         this.id = id;
         this.employeeId = employeeId;
         this.fullName = fullName;
         this.email = email;
         this.teamName = teamName;
         this.role = role;
+        this.active = active;
     }
 
     public Long getId() { return id; }
@@ -49,8 +48,6 @@ public class EmployeeProfile {
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
 
-    public List<EmployeeProfile> getColleagues() { return colleagues; }
-    public void setColleagues(List<EmployeeProfile> colleagues) {
-        this.colleagues = colleagues;
-    }
+    public boolean isActive() { return active; }
+    public void setActive(boolean active) { this.active = active; }
 }

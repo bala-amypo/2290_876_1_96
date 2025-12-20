@@ -1,14 +1,12 @@
-package com.example.demo.service;
+package com.example.demo.service.impl;
 
 import com.example.demo.dto.EmployeeProfileDto;
 import com.example.demo.model.EmployeeProfile;
 import com.example.demo.repository.EmployeeProfileRepository;
 import org.springframework.stereotype.Service;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
-public class EmployeeProfileServiceImpl implements EmployeeProfileService {
+public class EmployeeProfileServiceImpl {
 
     private final EmployeeProfileRepository repo;
 
@@ -16,41 +14,29 @@ public class EmployeeProfileServiceImpl implements EmployeeProfileService {
         this.repo = repo;
     }
 
-    public EmployeeProfileDto create(EmployeeProfileDto dto) {
+    public EmployeeProfile create(EmployeeProfileDto dto) {
+
         EmployeeProfile e = new EmployeeProfile(
-                null, dto.employeeId, dto.fullName,
-                dto.email, dto.teamName, dto.role, true);
-        repo.save(e);
-        return dto;
+                null,
+                dto.getEmployeeId(),
+                dto.getFullName(),
+                dto.getEmail(),
+                dto.getTeamName(),
+                dto.getRole(),
+                true
+        );
+
+        return repo.save(e);
     }
 
-    public EmployeeProfileDto update(Long id, EmployeeProfileDto dto) {
-        return dto;
-    }
+    public EmployeeProfile update(EmployeeProfileDto dto) {
 
-    public void deactivate(Long id) {
-        EmployeeProfile e = repo.findById(id).orElseThrow();
-        e.setActive(false);
-        repo.save(e);
-    }
+        EmployeeProfile e = repo.findById(dto.getId())
+                .orElseThrow(() -> new RuntimeException("Not found"));
 
-    public EmployeeProfileDto getById(Long id) {
-        EmployeeProfile e = repo.findById(id).orElseThrow();
-        EmployeeProfileDto dto = new EmployeeProfileDto();
-        dto.id = e.getId();
-        dto.fullName = e.getFullName();
-        return dto;
-    }
+        e.setFullName(dto.getFullName());
+        e.setActive(true);
 
-    public List<EmployeeProfileDto> getByTeam(String teamName) {
-        return repo.findByTeamNameAndActiveTrue(teamName)
-                .stream().map(e -> new EmployeeProfileDto())
-                .collect(Collectors.toList());
-    }
-
-    public List<EmployeeProfileDto> getAll() {
-        return repo.findAll().stream()
-                .map(e -> new EmployeeProfileDto())
-                .collect(Collectors.toList());
+        return repo.save(e);
     }
 }
