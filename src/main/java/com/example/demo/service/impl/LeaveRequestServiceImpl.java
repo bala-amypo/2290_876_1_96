@@ -18,3 +18,26 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         this.leaveRepo = leaveRepo;
         this.employeeRepo = employeeRepo;
     }
+    @Override
+    public LeaveRequest create(LeaveRequestDto dto) { return null; }
+
+    @Override
+    public LeaveRequest approve(long id) { return null; }
+
+    @Override
+    public LeaveRequest reject(long id) { return null; }
+
+    @Override
+    public LeaveRequest getByEmployee(long empId) { return null; }
+
+    @Override
+    public List<LeaveRequest> findApprovedOnDate(LocalDate date) {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public List<LeaveRequest> findOverlappingForTeam(
+            String team, LocalDate start, LocalDate end) {
+        return new ArrayList<>();
+    }
+}

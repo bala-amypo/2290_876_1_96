@@ -10,8 +10,20 @@ import java.util.List;
 @Service
 public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
 
+    public CapacityAnalysisServiceImpl(
+            TeamCapacityConfigRepository configRepo,
+            EmployeeProfileRepository employeeRepo,
+            LeaveRequestRepository leaveRepo,
+            CapacityAlertRepository alertRepo) {
+    }
     @Override
-    public List<String> analyzeCapacity(String teamName, LocalDate start, LocalDate end) {
-        return new ArrayList<>(); // dummy logic for now
+    public boolean analyzeTeamCapacity(
+            String team, LocalDate start, LocalDate end) {
+        return true;
+    }
+
+    @Override
+    public void analyzeOverCapacity(
+            String team, LocalDate start, LocalDate end) {
     }
 }
