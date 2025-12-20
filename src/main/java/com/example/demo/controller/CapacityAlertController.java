@@ -2,27 +2,20 @@ package com.example.demo.controller;
 
 import com.example.demo.model.CapacityAlert;
 import com.example.demo.service.CapacityAnalysisService;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/capacity-alerts")
+@RequestMapping("/capacity")
 public class CapacityAlertController {
 
-    private final CapacityAnalysisService analysisService;
+    @Autowired
+    private CapacityAnalysisService capacityAnalysisService;
 
-    public CapacityAlertController(
-            CapacityAnalysisService analysisService
-    ) {
-        this.analysisService = analysisService;
+    @GetMapping("/alerts")
+    public List<CapacityAlert> getAlerts() {
+        return capacityAnalysisService.generateAlerts();
     }
-@GetMapping("/alerts")
-public List<CapacityAlert> getAlerts() {
-    return capacityAnalysisService.generateAlerts();
-}
-
-
 }
