@@ -122,4 +122,16 @@ public class EmployeeProfile {
     public void setColleagues(Set<EmployeeProfile> colleagues) {
         this.colleagues = colleagues;
     }
+    public String getTeam() {
+    return team;
+}
+
+public boolean isActive() {
+    return active;
+}
+
+public void setActive(boolean active) {
+    this.active = active;
+}
+
 }

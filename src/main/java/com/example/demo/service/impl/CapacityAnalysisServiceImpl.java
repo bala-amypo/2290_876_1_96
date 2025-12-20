@@ -34,7 +34,10 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
     }
 
     @Override
-    public void analyzeTeamCapacity(
+    @Override
+    public List<CapacityAlert> analyzeCapacity(String team,
+                                           LocalDate startDate,
+                                           LocalDate endDate)(
             String team,
             LocalDate start,
             LocalDate end) {

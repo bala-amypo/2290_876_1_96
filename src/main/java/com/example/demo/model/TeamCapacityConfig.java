@@ -32,4 +32,16 @@ public class TeamCapacityConfig {
     public Integer getMaxCapacity() {
         return maxCapacity;
     }
+    public int getMaxPercentage() {
+    return maxPercentage;
+}
+
+public void setMaxPercentage(int maxPercentage) {
+    this.maxPercentage = maxPercentage;
+}
+
+public String getTeam() {
+    return team;
+}
+
 }
