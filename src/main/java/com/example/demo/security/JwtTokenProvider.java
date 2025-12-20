@@ -7,14 +7,14 @@ import org.springframework.stereotype.Component;
 public class JwtTokenProvider {
 
     public String generateToken(UserAccount user) {
-        return "token";
+        return "jwt-token-" + user.getId();
     }
 
     public boolean validateToken(String token) {
-        return true;
+        return token != null && token.startsWith("jwt-token-");
     }
 
     public Long getUserId(String token) {
-        return 1L;
+        return Long.parseLong(token.replace("jwt-token-", ""));
     }
 }

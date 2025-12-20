@@ -1,6 +1,8 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class EmployeeProfile {
@@ -16,11 +18,22 @@ public class EmployeeProfile {
     private String role;
     private boolean active;
 
+    @Transient
+    private List<EmployeeProfile> colleagues = new ArrayList<>();
+
+    // ✅ Default constructor
     public EmployeeProfile() {}
 
-    public EmployeeProfile(Long id, String employeeId, String fullName,
-                           String email, String teamName, String role,
-                           boolean active) {
+    // ✅ Parameterized constructor (TEST EXPECTED)
+    public EmployeeProfile(
+            Long id,
+            String employeeId,
+            String fullName,
+            String email,
+            String teamName,
+            String role,
+            boolean active
+    ) {
         this.id = id;
         this.employeeId = employeeId;
         this.fullName = fullName;
@@ -29,6 +42,8 @@ public class EmployeeProfile {
         this.role = role;
         this.active = active;
     }
+
+    // ✅ Getters & Setters
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -50,4 +65,13 @@ public class EmployeeProfile {
 
     public boolean isActive() { return active; }
     public void setActive(boolean active) { this.active = active; }
+
+    // ✅ REQUIRED BY TESTS
+    public List<EmployeeProfile> getColleagues() {
+        return colleagues;
+    }
+
+    public void setColleagues(List<EmployeeProfile> colleagues) {
+        this.colleagues = colleagues;
+    }
 }
