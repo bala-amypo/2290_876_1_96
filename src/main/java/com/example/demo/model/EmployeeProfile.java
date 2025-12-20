@@ -74,4 +74,5 @@ public class EmployeeProfile {
     public void setColleagues(List<EmployeeProfile> colleagues) {
         this.colleagues = colleagues;
     }
+    
 }
