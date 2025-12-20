@@ -1,74 +1,55 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.model.CapacityAlert;
+import com.example.demo.model.EmployeeProfile;
 import com.example.demo.model.TeamCapacityConfig;
-import com.example.demo.repository.CapacityAlertRepository;
 import com.example.demo.repository.EmployeeProfileRepository;
-import com.example.demo.repository.LeaveRequestRepository;
 import com.example.demo.repository.TeamCapacityConfigRepository;
 import com.example.demo.service.CapacityAnalysisService;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
 
-    private final TeamCapacityConfigRepository configRepo;
-    private final EmployeeProfileRepository employeeRepo;
-    private final LeaveRequestRepository leaveRepo;
-    private final CapacityAlertRepository alertRepo;
+    @Autowired
+    private EmployeeProfileRepository employeeRepository;
 
-    public CapacityAnalysisServiceImpl(
-            TeamCapacityConfigRepository configRepo,
-            EmployeeProfileRepository employeeRepo,
-            LeaveRequestRepository leaveRepo,
-            CapacityAlertRepository alertRepo) {
+    @Autowired
+    private TeamCapacityConfigRepository configRepository;
 
-        this.configRepo = configRepo;
-        this.employeeRepo = employeeRepo;
-        this.leaveRepo = leaveRepo;
-        this.alertRepo = alertRepo;
-    }
-
-    @Override
     @Override
     public List<CapacityAlert> analyzeCapacity(String team,
-                                           LocalDate startDate,
-                                           LocalDate endDate)(
-            String team,
-            LocalDate start,
-            LocalDate end) {
+                                                LocalDate startDate,
+                                                LocalDate endDate) {
 
         TeamCapacityConfig config =
-                configRepo.findByTeam(team).orElseThrow();
+                configRepository.findByTeam(team);
 
-        int maxAllowed = config.getMaxPercentage();
+        List<EmployeeProfile> employees =
+                employeeRepository.findAll().stream()
+                        .filter(e -> e.getTeam().equalsIgnoreCase(team))
+                        .filter(EmployeeProfile::isActive)
+                        .collect(Collectors.toList());   // ✅ FIXED
 
-        int totalEmployees = (int) employeeRepo.findAll()
-                .stream()
-                .filter(e -> team.equals(e.getTeam()) && e.isActive())
-                .count();
+        int totalEmployees = employees.size();
+        int maxAllowed =
+                (int) Math.ceil(totalEmployees * config.getMaxPercentage() / 100.0);
 
-        int onLeave = leaveRepo
-                .findByStatusAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
-                        "APPROVED", end, start)
-                .size();
+        List<CapacityAlert> alerts = new ArrayList<>();
 
-        int percent = totalEmployees == 0
-                ? 0
-                : (onLeave * 100) / totalEmployees;
-
-        if (percent > maxAllowed) {
-            CapacityAlert alert = new CapacityAlert(
-                    team,
-                    "CAPACITY_EXCEEDED",
-                    start,
-                    end
-            );
-            alertRepo.save(alert);
+        if (totalEmployees > maxAllowed) {
+            CapacityAlert alert = new CapacityAlert();
+            alert.setTeam(team);
+            alert.setMessage("Team capacity exceeded");
+            alerts.add(alert);
         }
+
+        return alerts;
     }
 }
