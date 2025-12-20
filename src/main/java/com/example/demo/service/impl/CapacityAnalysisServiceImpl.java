@@ -5,6 +5,17 @@ import com.example.demo.repository.TeamCapacityConfigRepository;
 import com.example.demo.service.CapacityAnalysisService;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.dto.CapacityAnalysisResultDto;
+import com.example.demo.model.TeamCapacityConfig;
+import com.example.demo.repository.TeamCapacityConfigRepository;
+import com.example.demo.repository.EmployeeProfileRepository;
+import com.example.demo.repository.LeaveRequestRepository;
+import com.example.demo.repository.CapacityAlertRepository;
+
+import java.util.HashMap;          
+import java.util.Map;
+import java.time.LocalDate;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
