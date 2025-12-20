@@ -24,12 +24,9 @@ public class EmployeeProfileController {
         return ResponseEntity.ok(employeeService.create(profile));
     }
 
-    @GetMapping("/team/{teamName}")
-    public ResponseEntity<List<EmployeeProfile>> getByTeam(
-            @PathVariable String teamName
-    ) {
-        return ResponseEntity.ok(
-                employeeService.getActiveEmployeesByTeam(teamName)
-        );
-    }
+    @GetMapping("/{team}")
+public List<EmployeeProfile> getActiveEmployees(@PathVariable String team) {
+    return employeeService.getActiveEmployeesByTeam(team);
+}
+
 }
