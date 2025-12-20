@@ -3,7 +3,7 @@ package com.example.demo.model;
 import jakarta.persistence.*;
 
 @Entity
-public class TeamCapacityRule {
+public class TeamCapacityConfig {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -12,11 +12,11 @@ public class TeamCapacityRule {
     private String team;
     private Integer maxCapacity;
 
-    // ✅ REQUIRED: No-args constructor
-    public TeamCapacityRule() {}
+    
+    public TeamCapacityConfig() {}
 
-    // ✅ REQUIRED: All-args constructor
-    public TeamCapacityRule(String team, Integer maxCapacity) {
+    
+    public TeamCapacityConfig(String team, Integer maxCapacity) {
         this.team = team;
         this.maxCapacity = maxCapacity;
     }
