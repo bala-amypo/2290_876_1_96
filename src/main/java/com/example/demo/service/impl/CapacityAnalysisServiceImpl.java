@@ -15,8 +15,8 @@ public class CapacityAnalysisServiceImpl {
             TeamCapacityConfigRepository configRepo,
             EmployeeProfileRepository employeeRepo,
             LeaveRequestRepository leaveRepo,
-            CapacityAlertRepository alertRepo) {
-
+            CapacityAlertRepository alertRepo
+    ) {
         this.configRepo = configRepo;
         this.employeeRepo = employeeRepo;
         this.leaveRepo = leaveRepo;

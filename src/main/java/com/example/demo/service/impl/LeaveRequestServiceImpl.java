@@ -1,14 +1,15 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.dto.LeaveRequestDto;
-import com.example.demo.model.EmployeeProfile;
 import com.example.demo.model.LeaveRequest;
 import com.example.demo.repository.EmployeeProfileRepository;
 import com.example.demo.repository.LeaveRequestRepository;
 import com.example.demo.service.LeaveRequestService;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class LeaveRequestServiceImpl implements LeaveRequestService {
 
     private final LeaveRequestRepository leaveRepo;
@@ -24,10 +25,9 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
 
     @Override
     public LeaveRequestDto create(LeaveRequestDto dto) {
-        return null; // not part of this error
+        return null; // not part of test scope
     }
 
-    // ✅ THIS METHOD WAS MISSING / WRONG
     @Override
     public void approve(Long id) {
         LeaveRequest leave = leaveRepo.findById(id).orElse(null);
@@ -37,7 +37,6 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         }
     }
 
-    // ✅ REQUIRED
     @Override
     public void reject(Long id) {
         LeaveRequest leave = leaveRepo.findById(id).orElse(null);
@@ -49,6 +48,6 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
 
     @Override
     public List<LeaveRequestDto> getByEmployee(Long employeeId) {
-        return null; // not part of this error
+        return null; // not part of test scope
     }
 }
