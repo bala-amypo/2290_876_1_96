@@ -30,18 +30,16 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
     }
 
     @Override
-    public LeaveRequest approve(Long id) {
-        LeaveRequest lr = repository.findById(id).orElseThrow();
-        lr.setStatus("APPROVED");
-        return repository.save(lr);
-    }
+public LeaveRequest applyLeave(LeaveRequest lr) {
+    return repository.save(lr);
+}
 
-    @Override
-    public LeaveRequest reject(Long id) {
-        LeaveRequest lr = repository.findById(id).orElseThrow();
-        lr.setStatus("REJECTED");
-        return repository.save(lr);
-    }
+@Override
+public LeaveRequest approveLeave(Long id) {
+    LeaveRequest lr = repository.findById(id).orElseThrow();
+    lr.setStatus("APPROVED");
+    return repository.save(lr);
+}
 
     @Override
     public List<LeaveRequest> getByEmployee(Long employeeId) {
