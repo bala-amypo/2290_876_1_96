@@ -9,40 +9,36 @@ public class UserAccount {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
     private String email;
-
     private String password;
-
-    // ✅ ADD THIS FIELD
     private String role;
 
+    // ✅ REQUIRED BY TESTS
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {   // ← REQUIRED
+        this.id = id;
     }
 
     public String getEmail() {
         return email;
     }
 
+    public String getRole() {       // ← REQUIRED
+        return role;
+    }
+
     public void setEmail(String email) {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    // ✅ REQUIRED BY CustomUserDetailsService
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
     }
 }
