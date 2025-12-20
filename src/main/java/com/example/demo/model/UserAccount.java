@@ -45,12 +45,6 @@ public class UserAccount {
     return password;
 }
 
-public String getEmail() {
-    return email;
-}
-
-public String getRole() {
-    return role;
-}
+    
 
 }
