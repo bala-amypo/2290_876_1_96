@@ -1,31 +1,34 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.dto.LeaveRequestDto;
-import com.example.demo.model.LeaveRequest;
 import com.example.demo.model.EmployeeProfile;
+import com.example.demo.model.LeaveRequest;
 import com.example.demo.repository.EmployeeProfileRepository;
 import com.example.demo.repository.LeaveRequestRepository;
 import com.example.demo.service.LeaveRequestService;
 
-import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class LeaveRequestServiceImpl implements LeaveRequestService {
 
     private final LeaveRequestRepository leaveRepo;
     private final EmployeeProfileRepository employeeRepo;
 
-    // ✅ Constructor EXACTLY as test expects
+    
     public LeaveRequestServiceImpl(LeaveRequestRepository leaveRepo,
                                    EmployeeProfileRepository employeeRepo) {
         this.leaveRepo = leaveRepo;
         this.employeeRepo = employeeRepo;
     }
 
+  
     @Override
     public LeaveRequestDto createLeave(LeaveRequestDto dto) {
 
         EmployeeProfile emp =
-                employeeRepo.findByEmployeeId(dto.getEmployeeId()).orElse(null);
+                employeeRepo.findById(Long.parseLong(dto.getEmployeeId()))
+                        .orElse(null);
 
         LeaveRequest leave = new LeaveRequest();
         leave.setEmployee(emp);
@@ -39,12 +42,32 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
 
         return new LeaveRequestDto(
                 saved.getId(),
-                emp.getEmployeeId(),
+                emp != null ? emp.getEmployeeId() : null,
                 saved.getStartDate(),
                 saved.getEndDate(),
                 saved.getType(),
                 saved.getReason(),
                 saved.getStatus()
         );
+    }
+
+    // ✅ IMPLEMENTED METHOD #2 (THIS FIXES ERROR 1)
+    @Override
+    public List<LeaveRequestDto> getByEmployee(Long employeeId) {
+
+        List<LeaveRequest> leaves =
+                leaveRepo.findByEmployeeId(employeeId);
+
+        return leaves.stream()
+                .map(l -> new LeaveRequestDto(
+                        l.getId(),
+                        l.getEmployee().getEmployeeId(),
+                        l.getStartDate(),
+                        l.getEndDate(),
+                        l.getType(),
+                        l.getReason(),
+                        l.getStatus()
+                ))
+                .collect(Collectors.toList());
     }
 }
