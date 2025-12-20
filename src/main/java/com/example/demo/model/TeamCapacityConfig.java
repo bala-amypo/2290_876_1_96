@@ -3,22 +3,34 @@ package com.example.demo.model;
 import jakarta.persistence.*;
 
 @Entity
-public class TeamCapacityConfig {
+public class TeamCapacityRule {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String team;
-    private int maxPercentage;
+    @Column(unique = true)
+    private String teamName;
+
+    private Integer totalHeadcount;
+    private Integer minCapacityPercent;
+
+    public TeamCapacityRule() {}
+
+    public TeamCapacityRule(Long id, String teamName,
+                            Integer totalHeadcount, Integer minCapacityPercent) {
+        this.id = id;
+        this.teamName = teamName;
+        this.totalHeadcount = totalHeadcount;
+        this.minCapacityPercent = minCapacityPercent;
+    }
 
     public Long getId() { return id; }
-
-    public String getTeam() { return team; }
-    public void setTeam(String team) { this.team = team; }
-
-    public int getMaxPercentage() { return maxPercentage; }
-    public void setMaxPercentage(int maxPercentage) {
-        this.maxPercentage = maxPercentage;
-    }
+    public void setId(Long id) { this.id = id; }
+    public String getTeamName() { return teamName; }
+    public void setTeamName(String teamName) { this.teamName = teamName; }
+    public Integer getTotalHeadcount() { return totalHeadcount; }
+    public void setTotalHeadcount(Integer totalHeadcount) { this.totalHeadcount = totalHeadcount; }
+    public Integer getMinCapacityPercent() { return minCapacityPercent; }
+    public void setMinCapacityPercent(Integer minCapacityPercent) { this.minCapacityPercent = minCapacityPercent; }
 }

@@ -1,25 +1,34 @@
 package com.example.demo.model;
 
+import jakarta.persistence.*;
+import java.time.LocalDate;
+
+@Entity
 public class CapacityAlert {
 
-    private String team;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String teamName;
+    private LocalDate date;
+    private String severity;
     private String message;
 
     public CapacityAlert() {}
 
-    public String getTeam() {
-        return team;
-    }
-
-    public void setTeam(String team) {
-        this.team = team;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
+    public CapacityAlert(Long id, String teamName, LocalDate date,
+                         String severity, String message) {
+        this.id = id;
+        this.teamName = teamName;
+        this.date = date;
+        this.severity = severity;
         this.message = message;
     }
+
+    public Long getId() { return id; }
+    public String getTeamName() { return teamName; }
+    public LocalDate getDate() { return date; }
+    public String getSeverity() { return severity; }
+    public String getMessage() { return message; }
 }
