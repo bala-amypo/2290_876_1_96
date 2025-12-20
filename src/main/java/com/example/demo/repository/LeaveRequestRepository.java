@@ -9,9 +9,14 @@ import java.util.List;
 
 public interface LeaveRequestRepository extends JpaRepository<LeaveRequest, Long> {
 
+    // Get all leaves of one employee
     List<LeaveRequest> findByEmployee(EmployeeProfile employee);
 
-    // REQUIRED by tests
-    List<LeaveRequest> findApprovedOverlappingForTeam(
-            String teamName, LocalDate start, LocalDate end);
+    // Get APPROVED overlapping leaves for a team
+    List<LeaveRequest> findByEmployee_TeamNameAndStatusAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
+            String teamName,
+            String status,
+            LocalDate endDate,
+            LocalDate startDate
+    );
 }

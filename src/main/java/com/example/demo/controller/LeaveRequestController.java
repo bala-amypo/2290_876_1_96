@@ -20,29 +20,23 @@ public class LeaveRequestController {
         this.service = service;
     }
 
-    // POST /api/leaves
     @PostMapping
-    public ResponseEntity<LeaveRequest> create(
-            @RequestBody LeaveRequestDto dto) {
+    public ResponseEntity<LeaveRequestDto> create(@RequestBody LeaveRequestDto dto) {
         return ResponseEntity.ok(service.create(dto));
     }
 
-    // PUT /api/leaves/{id}/approve
     @PutMapping("/{id}/approve")
     public ResponseEntity<LeaveRequest> approve(@PathVariable Long id) {
         return ResponseEntity.ok(service.approve(id));
     }
 
-    // PUT /api/leaves/{id}/reject
     @PutMapping("/{id}/reject")
     public ResponseEntity<LeaveRequest> reject(@PathVariable Long id) {
         return ResponseEntity.ok(service.reject(id));
     }
 
-    // GET /api/leaves/employee/{id}
     @GetMapping("/employee/{id}")
-    public ResponseEntity<List<LeaveRequest>> getByEmployee(
-            @PathVariable Long id) {
+    public ResponseEntity<List<LeaveRequest>> getByEmployee(@PathVariable Long id) {
         return ResponseEntity.ok(service.getByEmployee(id));
     }
 }

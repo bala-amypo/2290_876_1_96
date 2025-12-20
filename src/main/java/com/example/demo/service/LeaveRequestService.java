@@ -19,4 +19,3 @@ public interface LeaveRequestService {
     List<LeaveRequest> getOverlappingForTeam(
             String teamName, LocalDate start, LocalDate end);
 }
-

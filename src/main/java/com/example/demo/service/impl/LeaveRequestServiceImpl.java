@@ -23,35 +23,65 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         this.leaveRepo = leaveRepo;
         this.employeeRepo = employeeRepo;
     }
-    @Override
-public LeaveRequestDto create(LeaveRequestDto dto) {
 
-    if (dto.getStartDate().isAfter(dto.getEndDate())) {
-        throw new RuntimeException("Invalid date range");
+    @Override
+    public LeaveRequestDto create(LeaveRequestDto dto) {
+
+        if (dto.getStartDate().isAfter(dto.getEndDate())) {
+            throw new RuntimeException("Start date cannot be after end date");
+        }
+
+        EmployeeProfile employee = employeeRepo.findById(dto.getEmployeeId())
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+        LeaveRequest leave = new LeaveRequest();
+        leave.setEmployee(employee);
+        leave.setStartDate(dto.getStartDate());
+        leave.setEndDate(dto.getEndDate());
+        leave.setType(dto.getType());
+        leave.setReason(dto.getReason());
+        leave.setStatus("PENDING");
+
+        LeaveRequest saved = leaveRepo.save(leave);
+
+        LeaveRequestDto result = new LeaveRequestDto();
+        result.setEmployeeId(employee.getId());
+        result.setStartDate(saved.getStartDate());
+        result.setEndDate(saved.getEndDate());
+        result.setType(saved.getType());
+        result.setReason(saved.getReason());
+        result.setStatus(saved.getStatus());
+
+        return result;
     }
 
-    EmployeeProfile employee = employeeRepo.findById(dto.getEmployeeId())
-            .orElseThrow(() -> new RuntimeException("Employee not found"));
+    @Override
+    public LeaveRequest approve(Long id) {
+        LeaveRequest leave = leaveRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Leave not found"));
+        leave.setStatus("APPROVED");
+        return leaveRepo.save(leave);
+    }
 
-    LeaveRequest leave = new LeaveRequest();
-    leave.setEmployee(employee);
-    leave.setStartDate(dto.getStartDate());
-    leave.setEndDate(dto.getEndDate());
-    leave.setType(dto.getType());
-    leave.setReason(dto.getReason());
-    leave.setStatus("PENDING");
+    @Override
+    public LeaveRequest reject(Long id) {
+        LeaveRequest leave = leaveRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Leave not found"));
+        leave.setStatus("REJECTED");
+        return leaveRepo.save(leave);
+    }
 
-    LeaveRequest saved = leaveRepo.save(leave);
+    @Override
+    public List<LeaveRequest> getByEmployee(Long employeeId) {
+        EmployeeProfile employee = employeeRepo.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+        return leaveRepo.findByEmployee(employee);
+    }
 
-    LeaveRequestDto result = new LeaveRequestDto();
-    result.setEmployeeId(saved.getEmployee().getId());
-    result.setStartDate(saved.getStartDate());
-    result.setEndDate(saved.getEndDate());
-    result.setType(saved.getType());
-    result.setReason(saved.getReason());
+    @Override
+    public List<LeaveRequest> getOverlappingForTeam(
+            String teamName, LocalDate start, LocalDate end) {
 
-    return result;
-}
-
-   
+        return leaveRepo.findApprovedOverlappingForTeam(teamName, start, end);
+    }
 }
