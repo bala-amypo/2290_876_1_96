@@ -6,31 +6,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/capacity-rules")
-public class TeamCapacityRuleController {
+@RequestMapping("/api/capacity-config")
+public class TeamCapacityConfigController {
 
-    private final TeamCapacityRuleService service;
+    private final TeamCapacityRuleService ruleService;
 
-    public TeamCapacityRuleController(TeamCapacityRuleService service) {
-        this.service = service;
+    public TeamCapacityConfigController(
+            TeamCapacityRuleService ruleService
+    ) {
+        this.ruleService = ruleService;
     }
 
     @PostMapping
-    public ResponseEntity<TeamCapacityConfig> create(
-            @RequestBody TeamCapacityConfig rule) {
-        return ResponseEntity.ok(service.createRule(rule));
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<TeamCapacityConfig> update(
-            @PathVariable Long id,
-            @RequestBody TeamCapacityConfig rule) {
-        return ResponseEntity.ok(service.updateRule(id, rule));
-    }
-
-    @GetMapping("/{team}")
-    public ResponseEntity<TeamCapacityConfig> getByTeam(
-            @PathVariable String team) {
-        return ResponseEntity.ok(service.getRuleByTeam(team));
+    public ResponseEntity<TeamCapacityConfig> save(
+            @RequestBody TeamCapacityConfig config
+    ) {
+        return ResponseEntity.ok(ruleService.saveConfig(config));
     }
 }

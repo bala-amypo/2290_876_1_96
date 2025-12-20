@@ -1,31 +1,33 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.CapacityAnalysisResultDto;
+import com.example.demo.model.CapacityAlert;
 import com.example.demo.service.CapacityAnalysisService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/capacity-alerts")
 public class CapacityAlertController {
 
-    private final CapacityAnalysisService capacityAnalysisService;
+    private final CapacityAnalysisService analysisService;
 
-    public CapacityAlertController(CapacityAnalysisService capacityAnalysisService) {
-        this.capacityAnalysisService = capacityAnalysisService;
+    public CapacityAlertController(
+            CapacityAnalysisService analysisService
+    ) {
+        this.analysisService = analysisService;
     }
 
-   
-    @GetMapping("/analyze")
-    public ResponseEntity<CapacityAnalysisResultDto> analyzeAndGenerateAlerts(
-            @RequestParam String team,
+    @GetMapping("/{teamName}")
+    public ResponseEntity<List<CapacityAlert>> analyze(
+            @PathVariable String teamName,
             @RequestParam LocalDate start,
-            @RequestParam LocalDate end) {
-
+            @RequestParam LocalDate end
+    ) {
         return ResponseEntity.ok(
-                capacityAnalysisService.analyzeTeamCapacity(team, start, end)
+                analysisService.analyzeCapacity(teamName, start, end)
         );
     }
 }
