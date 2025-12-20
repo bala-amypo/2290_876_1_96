@@ -16,4 +16,10 @@ public interface CapacityAnalysisService {
             LocalDate start,
             LocalDate end
     );
+    CapacityAnalysisResultDto analyzeTeamCapacity(
+        String teamName,
+        LocalDate start,
+        LocalDate end
+);
+
 }

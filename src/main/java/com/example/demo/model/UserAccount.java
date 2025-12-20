@@ -44,6 +44,17 @@ public class UserAccount {
     public String getPassword() {
     return password;
 }
+@OneToOne
+@JoinColumn(name = "employee_profile_id")
+private EmployeeProfile employeeProfile;
+
+public EmployeeProfile getEmployeeProfile() {
+    return employeeProfile;
+}
+
+public void setEmployeeProfile(EmployeeProfile employeeProfile) {
+    this.employeeProfile = employeeProfile;
+}
 
     
 

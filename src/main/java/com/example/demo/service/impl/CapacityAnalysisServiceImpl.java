@@ -58,5 +58,14 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
     this.leaveRequestRepository = leaveRequestRepository;
     this.capacityAlertRepository = capacityAlertRepository;
 }
+@Override
+public CapacityAnalysisResultDto analyzeTeamCapacity(
+        String teamName,
+        LocalDate start,
+        LocalDate end
+) {
+    return new CapacityAnalysisResultDto(false, new HashMap<>());
+}
+
 
 }
