@@ -1,26 +1,37 @@
 package com.example.demo.model;
 
-import jakarta.persistence.*;
+import java.time.LocalDate;
 
-@Entity
 public class LeaveRequest {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private String status;
 
-    private Long employeeId;
-    private boolean approved = false;
+    public LeaveRequest() {}
 
-    public Long getId() { return id; }
-
-    public Long getEmployeeId() { return employeeId; }
-    public void setEmployeeId(Long employeeId) {
-        this.employeeId = employeeId;
+    public LocalDate getStartDate() {
+        return startDate;
     }
 
-    public boolean isApproved() { return approved; }
-    public void setApproved(boolean approved) {
-        this.approved = approved;
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

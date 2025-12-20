@@ -1,29 +1,25 @@
 package com.example.demo.model;
 
-import jakarta.persistence.*;
-import java.time.LocalDate;
-
-@Entity
 public class CapacityAlert {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     private String team;
-    private LocalDate date;
     private String message;
-    private String severity;
 
-    // ✅ REQUIRED
     public CapacityAlert() {}
 
-    // ✅ REQUIRED BY TESTS
-    public CapacityAlert(String team, LocalDate date,
-                         String message, String severity) {
+    public String getTeam() {
+        return team;
+    }
+
+    public void setTeam(String team) {
         this.team = team;
-        this.date = date;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
         this.message = message;
-        this.severity = severity;
     }
 }

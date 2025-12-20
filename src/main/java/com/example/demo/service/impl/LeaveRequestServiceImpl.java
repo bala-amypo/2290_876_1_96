@@ -13,50 +13,24 @@ import java.util.List;
 @Service
 public class LeaveRequestServiceImpl implements LeaveRequestService {
 
-    private final LeaveRequestRepository repository;
-
-    public LeaveRequestServiceImpl(LeaveRequestRepository repository) {
-        this.repository = repository;
-    }
+    @Autowired
+    private LeaveRequestRepository repository;
 
     @Override
-    public LeaveRequest create(LeaveRequestDto dto) {
-        LeaveRequest lr = new LeaveRequest();
-        lr.setEmployeeId(dto.getEmployeeId());
-        lr.setStartDate(dto.getStartDate());
-        lr.setEndDate(dto.getEndDate());
+    public LeaveRequest applyLeave(LeaveRequest lr) {
         lr.setStatus("PENDING");
         return repository.save(lr);
     }
 
     @Override
-public LeaveRequest applyLeave(LeaveRequest lr) {
-    return repository.save(lr);
-}
-
-@Override
-public LeaveRequest approveLeave(Long id) {
-    LeaveRequest lr = repository.findById(id).orElseThrow();
-    lr.setStatus("APPROVED");
-    return repository.save(lr);
-}
-
-    @Override
-    public List<LeaveRequest> getByEmployee(Long employeeId) {
-        return repository.findAll()
-                .stream()
-                .filter(l -> l.getEmployeeId().equals(employeeId))
-                .toList();
+    public LeaveRequest approveLeave(Long id) {
+        LeaveRequest lr = repository.findById(id).orElseThrow();
+        lr.setStatus("APPROVED");
+        return repository.save(lr);
     }
 
     @Override
-    public List<LeaveRequest> getOverlappingForTeam(
-            String team,
-            LocalDate start,
-            LocalDate end) {
-
-        return repository
-                .findByStatusAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
-                        "APPROVED", end, start);
+    public List<LeaveRequest> getAll() {
+        return repository.findAll();
     }
 }
