@@ -27,7 +27,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public AuthResponse login(AuthRequest request) {
+    public AuthResponse authenticate(AuthRequest request) {
 
         UserAccount user = userRepo.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Invalid credentials"));
