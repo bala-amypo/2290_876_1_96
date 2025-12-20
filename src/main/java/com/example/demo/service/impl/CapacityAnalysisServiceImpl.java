@@ -1,19 +1,25 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.CapacityAnalysisResultDto;
+import com.example.demo.repository.*;
 import org.springframework.stereotype.Service;
-import java.time.LocalDate;
-import java.util.HashMap;
 
 @Service
-public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
+public class CapacityAnalysisServiceImpl {
 
-    public CapacityAnalysisResultDto analyzeTeamCapacity(
-            String teamName, LocalDate start, LocalDate end) {
+    private final TeamCapacityConfigRepository configRepo;
+    private final EmployeeProfileRepository employeeRepo;
+    private final LeaveRequestRepository leaveRepo;
+    private final CapacityAlertRepository alertRepo;
 
-        CapacityAnalysisResultDto dto = new CapacityAnalysisResultDto();
-        dto.risky = false;
-        dto.capacityByDate = new HashMap<>();
-        return dto;
+    public CapacityAnalysisServiceImpl(
+            TeamCapacityConfigRepository configRepo,
+            EmployeeProfileRepository employeeRepo,
+            LeaveRequestRepository leaveRepo,
+            CapacityAlertRepository alertRepo) {
+
+        this.configRepo = configRepo;
+        this.employeeRepo = employeeRepo;
+        this.leaveRepo = leaveRepo;
+        this.alertRepo = alertRepo;
     }
 }

@@ -1,27 +1,34 @@
 package com.example.demo.model;
 
+import jakarta.persistence.*;
+import java.util.List;
 
+@Entity
 public class EmployeeProfile {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String employeeId;
     private String fullName;
     private String email;
     private String teamName;
     private String role;
-    private boolean active;
+
+    @OneToMany
+    private List<EmployeeProfile> colleagues;
 
     public EmployeeProfile() {}
 
     public EmployeeProfile(Long id, String employeeId, String fullName,
-                           String email, String teamName, String role, boolean active) {
+                           String email, String teamName, String role) {
         this.id = id;
         this.employeeId = employeeId;
         this.fullName = fullName;
         this.email = email;
         this.teamName = teamName;
         this.role = role;
-        this.active = active;
     }
 
     public Long getId() { return id; }
@@ -42,6 +49,8 @@ public class EmployeeProfile {
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
 
-    public boolean isActive() { return active; }
-    public void setActive(boolean active) { this.active = active; }
+    public List<EmployeeProfile> getColleagues() { return colleagues; }
+    public void setColleagues(List<EmployeeProfile> colleagues) {
+        this.colleagues = colleagues;
+    }
 }

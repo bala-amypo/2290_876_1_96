@@ -1,15 +1,16 @@
 package com.example.demo.repository;
 
 import com.example.demo.model.LeaveRequest;
+import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
-public interface LeaveRequestRepository {
+public interface LeaveRequestRepository extends JpaRepository<LeaveRequest, Long> {
 
-    LeaveRequest save(LeaveRequest leave);
+    List<LeaveRequest> findApprovedOverlappingForTeam(
+            String teamName, LocalDate start, LocalDate end);
 
-    Optional<LeaveRequest> findById(Long id);
-
-    List<LeaveRequest> findByEmployeeId(Long employeeId);
+    List<LeaveRequest> getOverlappingForTeam(
+            String teamName, LocalDate start, LocalDate end);
 }

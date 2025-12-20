@@ -4,7 +4,20 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class JwtTokenProvider {
-    public String generateToken(String username) {
-        return "dummy-jwt-token";
+
+    public boolean validateToken(String token) {
+        return true;
+    }
+
+    public String getUserId(String token) {
+        return "1";
+    }
+
+    public String getEmail(String token) {
+        return "test@example.com";
+    }
+
+    public String getRole(String token) {
+        return "USER";
     }
 }
