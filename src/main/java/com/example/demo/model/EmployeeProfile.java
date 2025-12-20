@@ -142,9 +142,7 @@ public class EmployeeProfile {
     }
     // ADD BELOW EXISTING METHODS
 
-    public boolean isActive() {
-        return this.active;
-    }
+    
 
     public void deactivate() {
         this.active = false;
