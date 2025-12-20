@@ -19,14 +19,10 @@ public class CapacityAlertController {
     ) {
         this.analysisService = analysisService;
     }
-
-    @GetMapping("/analyze")
-    public List<String> analyze(
-        @RequestParam String teamName,
-        @RequestParam LocalDate startDate,
-        @RequestParam LocalDate endDate) {
-
-    return analysisService.analyzeCapacity(teamName, startDate, endDate);
+@GetMapping("/alerts")
+public List<CapacityAlert> getAlerts() {
+    return capacityAnalysisService.generateAlerts();
 }
+
 
 }
