@@ -12,15 +12,10 @@ public interface CapacityAnalysisService {
             LocalDate end
     );
 
-    void analyzeTeamCapacity(
+    // ✅ KEEP ONLY THIS METHOD
+    CapacityAnalysisResultDto analyzeTeamCapacity(
             String teamName,
             LocalDate start,
             LocalDate end
     );
-    CapacityAnalysisResultDto analyzeTeamCapacity(
-        String teamName,
-        LocalDate start,
-        LocalDate end
-);
-
 }

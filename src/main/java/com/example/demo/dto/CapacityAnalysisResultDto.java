@@ -8,6 +8,19 @@ public class CapacityAnalysisResultDto {
     private boolean risky;
     private Map<LocalDate, Double> capacityByDate;
 
+    // ✅ REQUIRED no-args constructor
+    public CapacityAnalysisResultDto() {
+    }
+
+    // ✅ REQUIRED by tests & service
+    public CapacityAnalysisResultDto(
+            boolean risky,
+            Map<LocalDate, Double> capacityByDate
+    ) {
+        this.risky = risky;
+        this.capacityByDate = capacityByDate;
+    }
+
     public boolean isRisky() {
         return risky;
     }
