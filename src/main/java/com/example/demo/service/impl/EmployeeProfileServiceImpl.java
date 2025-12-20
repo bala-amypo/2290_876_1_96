@@ -6,8 +6,8 @@ import com.example.demo.repository.EmployeeProfileRepository;
 import com.example.demo.service.EmployeeProfileService;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EmployeeProfileServiceImpl implements EmployeeProfileService {
@@ -18,53 +18,69 @@ public class EmployeeProfileServiceImpl implements EmployeeProfileService {
         this.repository = repository;
     }
 
-    
+    // ✅ Create Employee
     @Override
-    public EmployeeProfile create(EmployeeProfileDto dto) {
+    public EmployeeProfileDto create(EmployeeProfileDto dto) {
 
         EmployeeProfile employee = new EmployeeProfile();
-
         employee.setEmployeeId(dto.getEmployeeId());
         employee.setFullName(dto.getFullName());
         employee.setEmail(dto.getEmail());
         employee.setTeamName(dto.getTeamName());
         employee.setRole(dto.getRole());
+        employee.setActive(true); // default true (as per rules)
 
-        
-        employee.setActive(true);
-        employee.setCreatedAt(LocalDateTime.now());
+        // ❌ DO NOT set createdAt (entity constructor already handles it)
 
-        return repository.save(employee);
+        EmployeeProfile saved = repository.save(employee);
+        return mapToDto(saved);
     }
 
-    
+    // ✅ Update Employee
     @Override
-    public EmployeeProfile update(Long id, EmployeeProfileDto dto) {
+    public EmployeeProfileDto update(Long id, EmployeeProfileDto dto) {
 
         EmployeeProfile employee = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
 
-        employee.setEmployeeId(dto.getEmployeeId());
         employee.setFullName(dto.getFullName());
         employee.setEmail(dto.getEmail());
         employee.setTeamName(dto.getTeamName());
         employee.setRole(dto.getRole());
+        employee.setActive(dto.getActive());
 
-        return repository.save(employee);
+        EmployeeProfile updated = repository.save(employee);
+        return mapToDto(updated);
     }
 
-    
+    // ✅ Get Employee by ID
     @Override
-    public EmployeeProfile getById(Long id) {
-
-        return repository.findById(id)
+    public EmployeeProfileDto getById(Long id) {
+        EmployeeProfile employee = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+        return mapToDto(employee);
     }
 
-    
+    // ✅ Get Employees by Team
     @Override
-    public List<EmployeeProfile> getByTeam(String teamName) {
+    public List<EmployeeProfileDto> getByTeam(String teamName) {
+        return repository.findByTeamName(teamName)
+                .stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
 
-        return repository.findByTeamName(teamName);
+    // 🔁 Entity → DTO Mapper
+    private EmployeeProfileDto mapToDto(EmployeeProfile employee) {
+        EmployeeProfileDto dto = new EmployeeProfileDto();
+        dto.setId(employee.getId());
+        dto.setEmployeeId(employee.getEmployeeId());
+        dto.setFullName(employee.getFullName());
+        dto.setEmail(employee.getEmail());
+        dto.setTeamName(employee.getTeamName());
+        dto.setRole(employee.getRole());
+        dto.setActive(employee.getActive());
+        return dto;
     }
 }
