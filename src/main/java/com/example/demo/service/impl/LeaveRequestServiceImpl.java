@@ -8,22 +8,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class LeaveRequestServiceImpl implements LeaveRequestService {
 
-    private final LeaveRequestRepository repo;
+    private final LeaveRequestRepository leaveRepo;
+    private final EmployeeProfileRepository employeeRepo;
 
-    public LeaveRequestServiceImpl(LeaveRequestRepository repo) {
-        this.repo = repo;
+    
+    public LeaveRequestServiceImpl(
+            LeaveRequestRepository leaveRepo,
+            EmployeeProfileRepository employeeRepo) {
+        this.leaveRepo = leaveRepo;
+        this.employeeRepo = employeeRepo;
     }
-
-    @Override
-    public LeaveRequest applyLeave(LeaveRequest request) {
-        request.setStatus("PENDING");
-        return repo.save(request);
-    }
-
-    @Override
-    public LeaveRequest approveLeave(Long id) {
-        LeaveRequest req = repo.findById(id).orElseThrow();
-        req.setStatus("APPROVED");
-        return repo.save(req);
-    }
-}
