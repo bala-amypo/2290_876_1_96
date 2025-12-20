@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface LeaveRequestService {
 
-    LeaveRequest create(LeaveRequestDto dto);
+    LeaveRequestDto create(LeaveRequestDto dto);
 
     LeaveRequest approve(Long id);
 

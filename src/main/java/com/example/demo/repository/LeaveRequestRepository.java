@@ -9,10 +9,9 @@ import java.util.List;
 
 public interface LeaveRequestRepository extends JpaRepository<LeaveRequest, Long> {
 
-    // REQUIRED by tests
     List<LeaveRequest> findByEmployee(EmployeeProfile employee);
 
-    // REQUIRED by capacity analysis
-    List<LeaveRequest> getOverlappingForTeam(
+    // REQUIRED by tests
+    List<LeaveRequest> findApprovedOverlappingForTeam(
             String teamName, LocalDate start, LocalDate end);
 }
