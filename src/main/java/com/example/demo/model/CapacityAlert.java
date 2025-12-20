@@ -50,12 +50,5 @@ public class CapacityAlert {
     public LocalDate getDate() { return date; }
     public String getSeverity() { return severity; }
     public String getMessage() { return message; }
-    public CapacityAlert(String teamName, LocalDate date,
-                     String severity, String message) {
-    this.teamName = teamName;
-    this.date = date;
-    this.severity = severity;
-    this.message = message;
-}
-
+    
 }

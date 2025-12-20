@@ -74,10 +74,6 @@ public class EmployeeProfile {
     public void setColleagues(List<EmployeeProfile> colleagues) {
         this.colleagues = colleagues;
     }
-    @Transient
-    public int getColleagues() {
-        return 0;
-    }
-
+    
 
 }
