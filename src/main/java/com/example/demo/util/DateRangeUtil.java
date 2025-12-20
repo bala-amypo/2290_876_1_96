@@ -1,13 +1,11 @@
 package com.example.demo.util;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 public class DateRangeUtil {
 
-    public static boolean overlaps(
-            LocalDate start1, LocalDate end1,
-            LocalDate start2, LocalDate end2) {
-
-        return !(end1.isBefore(start2) || start1.isAfter(end2));
+    public static long daysBetween(LocalDate start, LocalDate end) {
+        return ChronoUnit.DAYS.between(start, end) + 1;
     }
 }

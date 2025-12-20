@@ -53,58 +53,5 @@ public LeaveRequestDto create(LeaveRequestDto dto) {
     return result;
 }
 
-    @Override
-    public LeaveRequest create(LeaveRequestDto dto) {
-
-        if (dto.getStartDate().isAfter(dto.getEndDate())) {
-            throw new RuntimeException("Start date must be before end date");
-        }
-
-        EmployeeProfile employee = employeeRepo.findById(dto.getEmployeeId())
-                .orElseThrow(() -> new RuntimeException("Employee not found"));
-
-        LeaveRequest leave = new LeaveRequest(
-                employee,
-                dto.getStartDate(),
-                dto.getEndDate(),
-                dto.getType(),
-                "PENDING",
-                dto.getReason()
-        );
-
-        return leaveRepo.save(leave);
-    }
-
-    @Override
-    public LeaveRequest approve(Long id) {
-        LeaveRequest leave = leaveRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Leave not found"));
-
-        leave.setStatus("APPROVED");
-        return leaveRepo.save(leave);
-    }
-
-    @Override
-    public LeaveRequest reject(Long id) {
-        LeaveRequest leave = leaveRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Leave not found"));
-
-        leave.setStatus("REJECTED");
-        return leaveRepo.save(leave);
-    }
-
-    @Override
-    public List<LeaveRequest> getByEmployee(Long employeeId) {
-        EmployeeProfile employee = employeeRepo.findById(employeeId)
-                .orElseThrow(() -> new RuntimeException("Employee not found"));
-
-        return leaveRepo.findByEmployee(employee);
-    }
-
-    @Override
-    public List<LeaveRequest> getOverlappingForTeam(
-            String teamName, LocalDate start, LocalDate end) {
-
-        return leaveRepo.getOverlappingForTeam(teamName, start, end);
-    }
+   
 }
