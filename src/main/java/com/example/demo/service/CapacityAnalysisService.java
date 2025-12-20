@@ -5,7 +5,7 @@ import java.util.List;
 
 public interface CapacityAnalysisService {
 
-    List<LocalDate> getOverlappingDatesForTeam(
+    List<LocalDate> getOverlappingDates(
             String teamName,
             LocalDate start,
             LocalDate end
