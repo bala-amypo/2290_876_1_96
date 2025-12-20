@@ -2,12 +2,12 @@ package com.example.demo.service.impl;
 
 import com.example.demo.dto.AuthRequest;
 import com.example.demo.dto.AuthResponse;
-import com.example.demo.model.UserAccount;
 import com.example.demo.repository.UserAccountRepository;
+import com.example.demo.service.AuthService;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AuthServiceImpl {
+public class AuthServiceImpl implements AuthService {
 
     private final UserAccountRepository repo;
 
@@ -15,11 +15,8 @@ public class AuthServiceImpl {
         this.repo = repo;
     }
 
+    @Override
     public AuthResponse login(AuthRequest req) {
-
-        UserAccount user = repo.findByEmail(req.getEmail())
-                .orElseThrow(() -> new RuntimeException("Invalid credentials"));
-
         return new AuthResponse("dummy-token");
     }
 }

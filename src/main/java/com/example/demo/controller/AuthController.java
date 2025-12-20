@@ -1,21 +1,22 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.*;
-import com.example.demo.service.AuthServiceImpl;
+import com.example.demo.dto.AuthRequest;
+import com.example.demo.dto.AuthResponse;
+import com.example.demo.service.AuthService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
 
-    private final AuthServiceImpl service;
+    private final AuthService authService;
 
-    public AuthController(AuthServiceImpl service) {
-        this.service = service;
+    public AuthController(AuthService authService) {
+        this.authService = authService;
     }
 
     @PostMapping("/login")
-    public AuthResponse login(@RequestBody AuthRequest req) {
-        return service.authenticate(req);
+    public AuthResponse login(@RequestBody AuthRequest request) {
+        return authService.login(request);
     }
 }
