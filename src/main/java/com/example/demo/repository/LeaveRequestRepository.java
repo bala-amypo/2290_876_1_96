@@ -6,11 +6,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.time.LocalDate;
 import java.util.List;
 
-public interface LeaveRequestRepository extends JpaRepository<LeaveRequest, Long> {
+public interface LeaveRequestRepository
+        extends JpaRepository<LeaveRequest, Long> {
 
-    List<LeaveRequest> findApprovedOverlappingForTeam(
+    List<LeaveRequest> findOverlappingForTeam(
             String teamName, LocalDate start, LocalDate end);
 
-    List<LeaveRequest> getOverlappingForTeam(
+    List<LeaveRequest> findApprovedOverlappingForTeam(
             String teamName, LocalDate start, LocalDate end);
 }
