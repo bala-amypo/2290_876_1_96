@@ -10,38 +10,15 @@ public class TeamCapacityConfig {
     private Long id;
 
     private String team;
-    private Integer maxCapacity;
+    private int maxPercentage;
 
-    
-    public TeamCapacityConfig() {}
+    public Long getId() { return id; }
 
-    
-    public TeamCapacityConfig(String team, Integer maxCapacity) {
-        this.team = team;
-        this.maxCapacity = maxCapacity;
+    public String getTeam() { return team; }
+    public void setTeam(String team) { this.team = team; }
+
+    public int getMaxPercentage() { return maxPercentage; }
+    public void setMaxPercentage(int maxPercentage) {
+        this.maxPercentage = maxPercentage;
     }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getTeam() {
-        return team;
-    }
-
-    public Integer getMaxCapacity() {
-        return maxCapacity;
-    }
-    public int getMaxPercentage() {
-    return maxPercentage;
-}
-
-public void setMaxPercentage(int maxPercentage) {
-    this.maxPercentage = maxPercentage;
-}
-
-public String getTeam() {
-    return team;
-}
-
 }

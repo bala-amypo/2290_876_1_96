@@ -1,101 +1,26 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
 
 @Entity
-@Table(name = "leave_requests")
 public class LeaveRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "employee_id")
-    private EmployeeProfile employee;
+    private Long employeeId;
+    private boolean approved = false;
 
-    @Column(nullable = false)
-    private LocalDate startDate;
+    public Long getId() { return id; }
 
-    @Column(nullable = false)
-    private LocalDate endDate;
-
-    @Column(nullable = false)
-    private String type;
-
-    @Column(nullable = false)
-    private String status;
-
-    @Column
-    private String reason;
-
-    public LeaveRequest() {
+    public Long getEmployeeId() { return employeeId; }
+    public void setEmployeeId(Long employeeId) {
+        this.employeeId = employeeId;
     }
 
-    // ---------- Getters & Setters ----------
-
-    public Long getId() {
-        return id;
+    public boolean isApproved() { return approved; }
+    public void setApproved(boolean approved) {
+        this.approved = approved;
     }
-
-    public EmployeeProfile getEmployee() {
-        return employee;
-    }
-
-    public void setEmployee(EmployeeProfile employee) {
-        this.employee = employee;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
-    }
-
-    public LocalDate getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(LocalDate endDate) {
-        this.endDate = endDate;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getReason() {
-        return reason;
-    }
-
-    public void setReason(String reason) {
-        this.reason = reason;
-    }
-    public Long getEmployeeId() {
-    return employeeId;
-}
-
-public void setEmployeeId(Long employeeId) {
-    this.employeeId = employeeId;
-}
-
 }
