@@ -23,4 +23,28 @@ public class AuthServiceImpl implements AuthService {
         String token = tokenProvider.generateToken(request.getEmail());
         return new AuthResponse(token);
     }
+    @Service
+public class AuthServiceImpl implements AuthService {
+
+    private final JwtTokenProvider tokenProvider;
+
+    // ✅ REQUIRED BY TESTS
+    public AuthServiceImpl(UserAccountRepository repo,
+                           BCryptPasswordEncoder encoder,
+                           JwtTokenProvider tokenProvider) {
+        this.tokenProvider = tokenProvider;
+    }
+
+    // Existing constructor – KEEP IT
+    public AuthServiceImpl(JwtTokenProvider tokenProvider) {
+        this.tokenProvider = tokenProvider;
+    }
+
+    @Override
+    public AuthResponse authenticate(AuthRequest request) {
+        String token = tokenProvider.generateToken(request.getEmail());
+        return new AuthResponse(token);
+    }
+}
+
 }
