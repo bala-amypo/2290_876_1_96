@@ -23,6 +23,25 @@ import java.util.List;
 @Service
 public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
 
+    
+    private final TeamCapacityConfigRepository teamCapacityConfigRepository;
+    private final EmployeeProfileRepository employeeProfileRepository;
+    private final LeaveRequestRepository leaveRequestRepository;
+    private final CapacityAlertRepository capacityAlertRepository;
+
+        public CapacityAnalysisServiceImpl(
+            TeamCapacityConfigRepository teamCapacityConfigRepository,
+            EmployeeProfileRepository employeeProfileRepository,
+            LeaveRequestRepository leaveRequestRepository,
+            CapacityAlertRepository capacityAlertRepository
+    ) {
+        this.teamCapacityConfigRepository = teamCapacityConfigRepository;
+        this.employeeProfileRepository = employeeProfileRepository;
+        this.leaveRequestRepository = leaveRequestRepository;
+        this.capacityAlertRepository = capacityAlertRepository;
+    }
+
+
     private final TeamCapacityConfigRepository configRepo;
 
     public CapacityAnalysisServiceImpl(TeamCapacityConfigRepository configRepo) {
