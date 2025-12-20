@@ -4,7 +4,7 @@ import com.example.demo.repository.*;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CapacityAnalysisServiceImpl {
+public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
 
     private final TeamCapacityConfigRepository configRepo;
     private final EmployeeProfileRepository employeeRepo;
