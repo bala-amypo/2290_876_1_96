@@ -67,4 +67,12 @@ public class EmployeeProfileServiceImpl implements EmployeeProfileService {
     public List<EmployeeProfile> getAll() {
         return repository.findAll();
     }
+    @Override
+public List<EmployeeProfile> getActiveEmployeesByTeam(String team) {
+    return repository.findAll().stream()
+            .filter(EmployeeProfile::isActive)
+            .filter(e -> e.getTeam().equalsIgnoreCase(team))
+            .toList();
+}
+
 }

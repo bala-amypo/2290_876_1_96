@@ -90,4 +90,12 @@ public class LeaveRequest {
     public void setReason(String reason) {
         this.reason = reason;
     }
+    public Long getEmployeeId() {
+    return employeeId;
+}
+
+public void setEmployeeId(Long employeeId) {
+    this.employeeId = employeeId;
+}
+
 }

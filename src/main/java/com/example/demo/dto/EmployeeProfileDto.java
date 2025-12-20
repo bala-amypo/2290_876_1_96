@@ -59,4 +59,12 @@ public class EmployeeProfileDto {
     public void setRole(String role) {
         this.role = role;
     }
+    public String getName() {
+    return name;
+}
+
+public String getTeam() {
+    return team;
+}
+
 }
