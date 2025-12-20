@@ -1,36 +1,50 @@
-package com.example.demo.service;
+package com.example.demo.service.impl;
 
 import com.example.demo.dto.LeaveRequestDto;
 import com.example.demo.model.LeaveRequest;
+import com.example.demo.model.EmployeeProfile;
+import com.example.demo.repository.EmployeeProfileRepository;
 import com.example.demo.repository.LeaveRequestRepository;
-import org.springframework.stereotype.Service;
+import com.example.demo.service.LeaveRequestService;
 
-@Service
+import java.time.LocalDate;
+
 public class LeaveRequestServiceImpl implements LeaveRequestService {
 
-    private final LeaveRequestRepository repo;
+    private final LeaveRequestRepository leaveRepo;
+    private final EmployeeProfileRepository employeeRepo;
 
-    public LeaveRequestServiceImpl(LeaveRequestRepository repo) {
-        this.repo = repo;
+    // ✅ Constructor EXACTLY as test expects
+    public LeaveRequestServiceImpl(LeaveRequestRepository leaveRepo,
+                                   EmployeeProfileRepository employeeRepo) {
+        this.leaveRepo = leaveRepo;
+        this.employeeRepo = employeeRepo;
     }
 
-    public LeaveRequestDto create(LeaveRequestDto dto) {
-        return dto;
-    }
+    @Override
+    public LeaveRequestDto createLeave(LeaveRequestDto dto) {
 
-    public void approve(Long id) {
-        LeaveRequest lr = repo.findById(id).orElseThrow();
-        lr.setStatus("APPROVED");
-        repo.save(lr);
-    }
+        EmployeeProfile emp =
+                employeeRepo.findByEmployeeId(dto.getEmployeeId()).orElse(null);
 
-    public void reject(Long id) {
-        LeaveRequest lr = repo.findById(id).orElseThrow();
-        lr.setStatus("REJECTED");
-        repo.save(lr);
-    }
+        LeaveRequest leave = new LeaveRequest();
+        leave.setEmployee(emp);
+        leave.setStartDate(dto.getStartDate());
+        leave.setEndDate(dto.getEndDate());
+        leave.setType(dto.getType());
+        leave.setReason(dto.getReason());
+        leave.setStatus("PENDING");
 
-    public java.util.List<LeaveRequestDto> getByEmployee(Long employeeId) {
-        return java.util.List.of();
+        LeaveRequest saved = leaveRepo.save(leave);
+
+        return new LeaveRequestDto(
+                saved.getId(),
+                emp.getEmployeeId(),
+                saved.getStartDate(),
+                saved.getEndDate(),
+                saved.getType(),
+                saved.getReason(),
+                saved.getStatus()
+        );
     }
 }
