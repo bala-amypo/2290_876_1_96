@@ -1,8 +1,8 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.dto.LeaveRequestDto;
+import com.example.demo.model.LeaveRequest;
+import com.example.demo.repository.LeaveRequestRepository;
 import com.example.demo.service.CapacityAnalysisService;
-import com.example.demo.service.LeaveRequestService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -12,10 +12,10 @@ import java.util.List;
 @Service
 public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
 
-    private final LeaveRequestService leaveRequestService;
+    private final LeaveRequestRepository leaveRepo;
 
-    public CapacityAnalysisServiceImpl(LeaveRequestService leaveRequestService) {
-        this.leaveRequestService = leaveRequestService;
+    public CapacityAnalysisServiceImpl(LeaveRequestRepository leaveRepo) {
+        this.leaveRepo = leaveRepo;
     }
 
     @Override
@@ -24,20 +24,18 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
             LocalDate start,
             LocalDate end
     ) {
+        List<LeaveRequest> leaves =
+                leaveRepo.findApprovedOverlappingForTeam(teamName, start, end);
 
-        List<LeaveRequestDto> leaves =
-                leaveRequestService.getOverlappingForTeam(teamName, start, end);
+        List<LocalDate> dates = new ArrayList<>();
 
-        List<LocalDate> result = new ArrayList<>();
-
-        for (LeaveRequestDto leave : leaves) {
-            LocalDate current = leave.getStartDate();
-            while (!current.isAfter(leave.getEndDate())) {
-                result.add(current);
-                current = current.plusDays(1);
+        for (LeaveRequest leave : leaves) {
+            LocalDate d = leave.getStartDate();
+            while (!d.isAfter(leave.getEndDate())) {
+                dates.add(d);
+                d = d.plusDays(1);
             }
         }
-
-        return result; // ✅ List<LocalDate> EXACT MATCH
+        return dates;
     }
 }
