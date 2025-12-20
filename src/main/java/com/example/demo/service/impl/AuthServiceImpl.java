@@ -11,19 +11,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthServiceImpl implements AuthService {
 
+    private final UserAccountRepository userRepo;
+    private final BCryptPasswordEncoder encoder;
     private final JwtTokenProvider tokenProvider;
 
-    // ✅ REQUIRED BY SPRING
-    public AuthServiceImpl(JwtTokenProvider tokenProvider) {
-        this.tokenProvider = tokenProvider;
-    }
-
     // ✅ REQUIRED BY TESTS
-    public AuthServiceImpl(
-            UserAccountRepository userRepo,
-            BCryptPasswordEncoder encoder,
-            JwtTokenProvider tokenProvider
-    ) {
+    public AuthServiceImpl(UserAccountRepository userRepo,
+                           BCryptPasswordEncoder encoder,
+                           JwtTokenProvider tokenProvider) {
+        this.userRepo = userRepo;
+        this.encoder = encoder;
         this.tokenProvider = tokenProvider;
     }
 
