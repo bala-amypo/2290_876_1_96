@@ -26,7 +26,7 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
             LocalDate start,
             LocalDate end) {
 
-        List<LeaveRequest> leaves =
+        List<LeaveRequestDto> leaves =
                 leaveRequestService.getOverlappingForTeam(teamName, start, end);
 
         Set<LocalDate> dates = new HashSet<>();
