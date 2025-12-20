@@ -1,12 +1,9 @@
-package com.example.demo.service;
-
 import java.time.LocalDate;
+import java.util.List;
+import com.example.demo.model.CapacityAlert;
 
 public interface CapacityAnalysisService {
-
-    void analyzeTeamCapacity(
-            String team,
-            LocalDate start,
-            LocalDate end
-    );
+    List<CapacityAlert> analyzeCapacity(String team,
+                                        LocalDate startDate,
+                                        LocalDate endDate);
 }
