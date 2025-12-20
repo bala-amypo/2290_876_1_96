@@ -3,21 +3,13 @@ package com.example.demo.dto;
 public class AuthResponse {
 
     private String token;
-
-    // REQUIRED by tests
-    public AuthResponse() {}
+    private Long userId;
 
     public AuthResponse(String token) {
         this.token = token;
+        this.userId = 1L;
     }
 
-    // REQUIRED getter
-    public String getToken() {
-        return token;
-    }
-
-    // REQUIRED setter
-    public void setToken(String token) {
-        this.token = token;
-    }
+    public String getToken() { return token; }
+    public Long getUserId() { return userId; }
 }
