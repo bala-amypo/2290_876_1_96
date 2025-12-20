@@ -51,7 +51,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         );
     }
 
-    // ✅ IMPLEMENTED METHOD #2 (THIS FIXES ERROR 1)
+    
     @Override
     public List<LeaveRequestDto> getByEmployee(Long employeeId) {
 
