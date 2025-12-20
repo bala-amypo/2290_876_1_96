@@ -67,6 +67,10 @@ public class EmployeeProfileServiceImpl implements EmployeeProfileService {
                 .stream().map(this::toDto)
                 .collect(Collectors.toList());
     }
+    @Override
+    public List<EmployeeProfile> getActiveEmployeesByTeam(String team) {
+        return repository.findByTeamNameAndActiveTrue(team);
+}
 
     @Override
     public List<EmployeeProfileDto> getAll() {
