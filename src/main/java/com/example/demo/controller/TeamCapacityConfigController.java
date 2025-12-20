@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.TeamCapacityConfig;
-import com.example.demo.service.TeamCapacityRuleService;
+import com.example.demo.service.TeamCapacityConfigService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,9 +10,9 @@ import java.util.List;
 @RequestMapping("/api/capacity-rules")
 public class TeamCapacityConfigController {
 
-    private final TeamCapacityRuleService service;
+    private final TeamCapacityConfigService service;
 
-    public TeamCapacityRuleController(TeamCapacityRuleService service) {
+    public TeamCapacityConfigController(TeamCapacityConfigService service) {
         this.service = service;
     }
 
