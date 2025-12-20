@@ -1,49 +1,28 @@
-package com.example.demo.service.impl;
+package com.example.demo.service;
 
-import com.example.demo.dto.AuthRequest;
-import com.example.demo.dto.AuthResponse;
-import com.example.demo.exception.BadRequestException;
-import com.example.demo.model.UserAccount;
-import com.example.demo.repository.UserAccountRepository;
+import com.example.demo.dto.*;
 import com.example.demo.security.JwtTokenProvider;
-import com.example.demo.service.AuthService;
+import com.example.demo.repository.UserAccountRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AuthServiceImpl implements AuthService {
+public class AuthServiceImpl {
 
-    private final UserAccountRepository userRepo;
-    private final BCryptPasswordEncoder passwordEncoder;
-    private final JwtTokenProvider tokenProvider;
+    private final UserAccountRepository repo;
+    private final BCryptPasswordEncoder encoder;
+    private final JwtTokenProvider jwt;
 
-    public AuthServiceImpl(
-            UserAccountRepository userRepo,
-            BCryptPasswordEncoder passwordEncoder,
-            JwtTokenProvider tokenProvider
-    ) {
-        this.userRepo = userRepo;
-        this.passwordEncoder = passwordEncoder;
-        this.tokenProvider = tokenProvider;
+    public AuthServiceImpl(UserAccountRepository repo,
+                           BCryptPasswordEncoder encoder,
+                           JwtTokenProvider jwt) {
+        this.repo = repo;
+        this.encoder = encoder;
+        this.jwt = jwt;
     }
 
-    @Override
-    public AuthResponse authenticate(AuthRequest request) {
-
-        UserAccount user = userRepo.findByEmail(request.getEmail())
-                .orElseThrow(() -> new BadRequestException("Invalid credentials"));
-
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new BadRequestException("Invalid credentials");
-        }
-
-        String token = tokenProvider.generateToken(user);
-
-        return new AuthResponse(
-                token,
-                user.getId(),
-                user.getEmail(),
-                user.getRole()
-        );
+    public AuthResponse authenticate(AuthRequest req) {
+        String token = jwt.generateToken(req.username);
+        return new AuthResponse(token);
     }
 }

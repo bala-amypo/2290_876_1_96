@@ -1,31 +1,24 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.LeaveRequest;
-import com.example.demo.service.LeaveRequestService;
-import org.springframework.http.ResponseEntity;
+import com.example.demo.dto.LeaveRequestDto;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/leaves")
 public class LeaveRequestController {
 
-    private final LeaveRequestService leaveService;
-
-    public LeaveRequestController(LeaveRequestService leaveService) {
-        this.leaveService = leaveService;
-    }
-
     @PostMapping
-    public ResponseEntity<LeaveRequest> applyLeave(
-            @RequestBody LeaveRequest request
-    ) {
-        return ResponseEntity.ok(leaveService.applyLeave(request));
+    public String submit(@RequestBody LeaveRequestDto dto) {
+        return "Leave submitted";
     }
 
     @PutMapping("/{id}/approve")
-    public ResponseEntity<LeaveRequest> approve(
-            @PathVariable Long id
-    ) {
-        return ResponseEntity.ok(leaveService.approveLeave(id));
+    public String approve(@PathVariable Long id) {
+        return "Leave approved";
+    }
+
+    @PutMapping("/{id}/reject")
+    public String reject(@PathVariable Long id) {
+        return "Leave rejected";
     }
 }
