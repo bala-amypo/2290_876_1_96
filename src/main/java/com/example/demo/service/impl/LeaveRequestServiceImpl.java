@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class LeaveRequestServiceImpl implements LeaveRequestService {
@@ -19,17 +20,14 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
 
     public LeaveRequestServiceImpl(
             LeaveRequestRepository leaveRepo,
-            EmployeeProfileRepository employeeRepo) {
+            EmployeeProfileRepository employeeRepo
+    ) {
         this.leaveRepo = leaveRepo;
         this.employeeRepo = employeeRepo;
     }
 
     @Override
     public LeaveRequestDto create(LeaveRequestDto dto) {
-
-        if (dto.getStartDate().isAfter(dto.getEndDate())) {
-            throw new RuntimeException("Start date cannot be after end date");
-        }
 
         EmployeeProfile employee = employeeRepo.findById(dto.getEmployeeId())
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
@@ -43,45 +41,63 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         leave.setStatus("PENDING");
 
         LeaveRequest saved = leaveRepo.save(leave);
-
-        LeaveRequestDto result = new LeaveRequestDto();
-        result.setEmployeeId(employee.getId());
-        result.setStartDate(saved.getStartDate());
-        result.setEndDate(saved.getEndDate());
-        result.setType(saved.getType());
-        result.setReason(saved.getReason());
-        result.setStatus(saved.getStatus());
-
-        return result;
+        return toDto(saved);
     }
 
     @Override
-    public LeaveRequest approve(Long id) {
+    public LeaveRequestDto approve(Long id) {
+
         LeaveRequest leave = leaveRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Leave not found"));
+
         leave.setStatus("APPROVED");
-        return leaveRepo.save(leave);
+        return toDto(leaveRepo.save(leave));
     }
 
     @Override
-    public LeaveRequest reject(Long id) {
+    public LeaveRequestDto reject(Long id) {
+
         LeaveRequest leave = leaveRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Leave not found"));
+
         leave.setStatus("REJECTED");
-        return leaveRepo.save(leave);
+        return toDto(leaveRepo.save(leave));
     }
 
     @Override
-    public List<LeaveRequest> getByEmployee(Long employeeId) {
-        EmployeeProfile employee = employeeRepo.findById(employeeId)
-                .orElseThrow(() -> new RuntimeException("Employee not found"));
-        return leaveRepo.findByEmployee(employee);
+    public List<LeaveRequestDto> getByEmployee(Long employeeId) {
+
+        return leaveRepo.findByEmployee_Id(employeeId)
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<LeaveRequest> getOverlappingForTeam(
-            String teamName, LocalDate start, LocalDate end) {
+            String teamName,
+            LocalDate start,
+            LocalDate end) {
 
-        return leaveRepo.findApprovedOverlappingForTeam(teamName, start, end);
+        return leaveRepo
+            .findByEmployee_TeamNameAndStatusAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
+                teamName,
+                "APPROVED",
+                end,
+                start
+            );
+    }
+
+    private LeaveRequestDto toDto(LeaveRequest leave) {
+
+        LeaveRequestDto dto = new LeaveRequestDto();
+        dto.setId(leave.getId());
+        dto.setEmployeeId(leave.getEmployee().getId());
+        dto.setStartDate(leave.getStartDate());
+        dto.setEndDate(leave.getEndDate());
+        dto.setType(leave.getType());
+        dto.setStatus(leave.getStatus());
+        dto.setReason(leave.getReason());
+        return dto;
     }
 }

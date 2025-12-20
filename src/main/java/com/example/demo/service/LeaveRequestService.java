@@ -10,12 +10,15 @@ public interface LeaveRequestService {
 
     LeaveRequestDto create(LeaveRequestDto dto);
 
-    LeaveRequest approve(Long id);
+    LeaveRequestDto approve(Long id);
 
-    LeaveRequest reject(Long id);
+    LeaveRequestDto reject(Long id);
 
-    List<LeaveRequest> getByEmployee(Long employeeId);
+    List<LeaveRequestDto> getByEmployee(Long employeeId);
 
     List<LeaveRequest> getOverlappingForTeam(
-            String teamName, LocalDate start, LocalDate end);
+            String teamName,
+            LocalDate start,
+            LocalDate end
+    );
 }
