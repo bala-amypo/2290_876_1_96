@@ -48,6 +48,11 @@ public class EmployeeProfile {
     )
     private Set<EmployeeProfile> colleagues = new HashSet<>();
 
+    public Boolean isActive() {
+        return active;
+    }
+
+
     
     public EmployeeProfile() {
         this.createdAt = LocalDateTime.now();
