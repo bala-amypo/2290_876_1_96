@@ -21,7 +21,7 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
     private final UserAccountRepository userAccountRepository;
     private final CapacityAlertRepository capacityAlertRepository;
 
-    // ✅ CONSTRUCTOR REQUIRED BY TESTS
+    // ✅ REQUIRED BY TESTS
     public CapacityAnalysisServiceImpl(
             LeaveRequestRepository leaveRequestRepository,
             TeamCapacityConfigRepository configRepository,
@@ -43,7 +43,7 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
             LocalDate endDate
     ) {
 
-        // 🔹 Resolve user
+        // 1️⃣ Resolve user → employee → team
         UserAccount user = userAccountRepository
                 .findByEmail(userEmail)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -55,20 +55,21 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
 
         String teamName = profile.getTeamName();
 
+        // 2️⃣ Load capacity config
         TeamCapacityConfig config = configRepository
                 .findByTeamName(teamName)
                 .orElseThrow(() -> new IllegalArgumentException("Team config not found"));
 
         int totalHeadcount = config.getTotalHeadcount();
-        int minAvailable =
-                (int) Math.ceil(totalHeadcount * (config.getMinCapacityPercent() / 100.0));
+        int minCapacityPercent = config.getMinCapacityPercent();
 
+        // 3️⃣ Load approved leaves
         List<LeaveRequest> leaves =
                 leaveRequestRepository.findApprovedOverlappingForTeam(
                         teamName, startDate, endDate);
 
+        // 4️⃣ Count leaves per date
         Map<LocalDate, Integer> leaveCount = new HashMap<>();
-
         for (LeaveRequest leave : leaves) {
             LocalDate d = leave.getStartDate();
             while (!d.isAfter(leave.getEndDate())) {
@@ -77,17 +78,28 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
             }
         }
 
-        List<LocalDate> insufficientDates = new ArrayList<>();
-        LocalDate d = startDate;
+        // 5️⃣ Calculate capacity %
+        Map<LocalDate, Double> capacityByDate = new LinkedHashMap<>();
+        boolean risky = false;
 
+        LocalDate d = startDate;
         while (!d.isAfter(endDate)) {
             int onLeave = leaveCount.getOrDefault(d, 0);
-            if ((totalHeadcount - onLeave) < minAvailable) {
-                insufficientDates.add(d);
+            int available = totalHeadcount - onLeave;
+
+            double capacityPercent =
+                    ((double) available / totalHeadcount) * 100;
+
+            capacityByDate.put(d, capacityPercent);
+
+            if (capacityPercent < minCapacityPercent) {
+                risky = true;
             }
+
             d = d.plusDays(1);
         }
 
-        return new CapacityAnalysisResultDto(insufficientDates);
+        // 6️⃣ Return EXACT DTO expected by tests
+        return new CapacityAnalysisResultDto(risky, capacityByDate);
     }
 }
