@@ -33,10 +33,11 @@ public class SecurityConfig {
                         "/swagger-ui/**",
                         "/swagger-ui.html",
                         "/v3/api-docs/**",
-                        "/api/capacity-alerts",
-                        "/api/employees",
-                        "/api/leaves",
-                        "/api/capacity-rules"
+                        "/api/capacity-alerts/**",
+                        "/api/employees/**",
+                        "/api/leaves/**",
+                        "/api/capacity-rules/**",
+                        "/api/auth/**"
                 ).permitAll()
 
                 // Auth API
