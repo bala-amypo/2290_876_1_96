@@ -16,7 +16,6 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
     private final LeaveRequestRepository leaveRequestRepository;
     private final TeamCapacityConfigRepository configRepository;
 
-    // 🔹 REQUIRED by tests (even if unused)
     public CapacityAnalysisServiceImpl(
             LeaveRequestRepository leaveRequestRepository,
             TeamCapacityConfigRepository configRepository,
