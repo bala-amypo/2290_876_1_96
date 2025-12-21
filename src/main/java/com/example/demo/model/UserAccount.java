@@ -8,7 +8,8 @@ public class UserAccount {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String user
+    private String username;
+    @Column(unique=true)
     private String email;
     private String password;
     private String role;
@@ -29,6 +30,10 @@ public class UserAccount {
         return email;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
     public String getRole() {
         return role;
     }
@@ -43,6 +48,10 @@ public class UserAccount {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public void setRole(String role) {
