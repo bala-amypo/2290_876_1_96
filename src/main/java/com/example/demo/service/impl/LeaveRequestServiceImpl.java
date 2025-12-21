@@ -20,71 +20,54 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
 
     public LeaveRequestServiceImpl(
             LeaveRequestRepository leaveRepo,
-            EmployeeProfileRepository employeeRepo
-    ) {
+            EmployeeProfileRepository employeeRepo) {
         this.leaveRepo = leaveRepo;
         this.employeeRepo = employeeRepo;
     }
 
     @Override
     public LeaveRequestDto create(LeaveRequestDto dto) {
-
-        EmployeeProfile employee = employeeRepo.findById(dto.getEmployeeId())
-                .orElseThrow(() ->
-                        new IllegalArgumentException(
-                                "Employee not found with id: " + dto.getEmployeeId()
-                        ));
+        EmployeeProfile emp = employeeRepo.findById(dto.getEmployeeId())
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
 
         LeaveRequest leave = new LeaveRequest();
-        leave.setEmployee(employee);
+        leave.setEmployee(emp);
         leave.setStartDate(dto.getStartDate());
         leave.setEndDate(dto.getEndDate());
         leave.setType(dto.getType());
-        leave.setStatus(dto.getStatus());
         leave.setReason(dto.getReason());
+        leave.setStatus("PENDING");
 
         return toDto(leaveRepo.save(leave));
     }
 
     @Override
     public LeaveRequestDto approve(Long id) {
-        LeaveRequest leave = leaveRepo.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Leave not found"));
-
+        LeaveRequest leave = leaveRepo.findById(id).orElseThrow();
         leave.setStatus("APPROVED");
         return toDto(leaveRepo.save(leave));
     }
 
     @Override
     public LeaveRequestDto reject(Long id) {
-        LeaveRequest leave = leaveRepo.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Leave not found"));
-
+        LeaveRequest leave = leaveRepo.findById(id).orElseThrow();
         leave.setStatus("REJECTED");
         return toDto(leaveRepo.save(leave));
     }
 
     @Override
-    public List<LeaveRequestDto> getByEmployee(Long id) {
-        EmployeeProfile employee = employeeRepo.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Employee not found"));
-
-        return leaveRepo.findByEmployee(employee)
-                .stream()
-                .map(this::toDto)
-                .collect(Collectors.toList());
+    public List<LeaveRequestDto> getByEmployee(Long employeeId) {
+        EmployeeProfile emp = employeeRepo.findById(employeeId).orElseThrow();
+        return leaveRepo.findByEmployee(emp)
+                .stream().map(this::toDto).collect(Collectors.toList());
     }
 
-    // ✅ MISSING METHOD — REQUIRED BY INTERFACE
     @Override
-    public List<LeaveRequest> getOverlappingForTeam(
-            String teamName,
-            LocalDate startDate,
-            LocalDate endDate
-    ) {
-        return leaveRepo.findApprovedOverlappingForTeam(
-                teamName, startDate, endDate
-        );
+    public List<LeaveRequestDto> getOverlappingForTeam(
+            String teamName, LocalDate start, LocalDate end) {
+
+        return leaveRepo.findApprovedOverlappingForTeam(teamName, start, end)
+                .stream().map(this::toDto).collect(Collectors.toList());
     }
 
     private LeaveRequestDto toDto(LeaveRequest leave) {
@@ -98,17 +81,4 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         dto.setReason(leave.getReason());
         return dto;
     }
-    @Override
-    public List<LeaveRequestDto> getOverlappingForTeam(
-            String teamName,
-            LocalDate startDate,
-            LocalDate endDate
-    ) {
-        return leaveRepo
-                .findApprovedOverlappingForTeam(teamName, startDate, endDate)
-                .stream()
-                .map(this::toDto)
-                .collect(Collectors.toList());
-    }
-
 }
