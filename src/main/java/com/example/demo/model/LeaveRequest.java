@@ -19,6 +19,15 @@ public class LeaveRequest {
     private String status;
     private String reason;
 
+    @PrePersist
+    @PreUpdate
+    private void validateDates() {
+        if (startDate != null && endDate != null && startDate.isAfter(endDate)) {
+            throw new IllegalArgumentException("Start date cannot be after end date");
+        }
+    }
+
+
     // REQUIRED getters/setters (tests call ALL of these)
 
     public Long getId() { return id; }
