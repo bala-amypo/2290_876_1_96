@@ -1,95 +1,105 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.dto.LeaveRequestDto;
+import com.example.demo.dto.CapacityAnalysisResultDto;
 import com.example.demo.model.EmployeeProfile;
 import com.example.demo.model.LeaveRequest;
-import com.example.demo.repository.EmployeeProfileRepository;
-import com.example.demo.repository.LeaveRequestRepository;
-import com.example.demo.service.LeaveRequestService;
+import com.example.demo.model.TeamCapacityConfig;
+import com.example.demo.model.UserAccount;
+import com.example.demo.repository.*;
+import com.example.demo.service.CapacityAnalysisService;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.time.LocalDate;
+import java.util.*;
 
 @Service
-public class LeaveRequestServiceImpl implements LeaveRequestService {
+public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
 
     private final LeaveRequestRepository leaveRequestRepository;
+    private final TeamCapacityConfigRepository configRepository;
     private final EmployeeProfileRepository employeeProfileRepository;
+    private final UserAccountRepository userAccountRepository;
+    private final CapacityAlertRepository capacityAlertRepository;
 
-    public LeaveRequestServiceImpl(
+    // ✅ REQUIRED BY TESTS
+    public CapacityAnalysisServiceImpl(
             LeaveRequestRepository leaveRequestRepository,
-            EmployeeProfileRepository employeeProfileRepository
+            TeamCapacityConfigRepository configRepository,
+            EmployeeProfileRepository employeeProfileRepository,
+            UserAccountRepository userAccountRepository,
+            CapacityAlertRepository capacityAlertRepository
     ) {
         this.leaveRequestRepository = leaveRequestRepository;
+        this.configRepository = configRepository;
         this.employeeProfileRepository = employeeProfileRepository;
+        this.userAccountRepository = userAccountRepository;
+        this.capacityAlertRepository = capacityAlertRepository;
     }
 
     @Override
-    public LeaveRequestDto create(LeaveRequestDto dto) {
+    public CapacityAnalysisResultDto analyzeTeamCapacity(
+            String userEmail,
+            LocalDate startDate,
+            LocalDate endDate
+    ) {
 
-        EmployeeProfile employee = employeeProfileRepository
-                .findById(dto.getEmployeeId())
-                .orElseThrow(() ->
-                        new IllegalArgumentException("Employee not found"));
+        // 1️⃣ Resolve user → employee → team
+        UserAccount user = userAccountRepository
+                .findByEmail(userEmail)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        LeaveRequest leave = new LeaveRequest();
-        leave.setEmployee(employee);
-        leave.setStartDate(dto.getStartDate());
-        leave.setEndDate(dto.getEndDate());
-        leave.setType(dto.getType());
-        leave.setStatus(dto.getStatus());
-        leave.setReason(dto.getReason());
+        EmployeeProfile profile = user.getEmployeeProfile();
+        if (profile == null) {
+            throw new IllegalArgumentException("Employee profile missing");
+        }
 
-        LeaveRequest saved = leaveRequestRepository.save(leave);
-        return toDto(saved);
-    }
+        String teamName = profile.getTeamName();
 
-    @Override
-    public LeaveRequestDto approve(Long id) {
-        LeaveRequest leave = getLeave(id);
-        leave.setStatus("APPROVED");
-        return toDto(leaveRequestRepository.save(leave));
-    }
+        // 2️⃣ Load capacity config
+        TeamCapacityConfig config = configRepository
+                .findByTeamName(teamName)
+                .orElseThrow(() -> new IllegalArgumentException("Team config not found"));
 
-    @Override
-    public LeaveRequestDto reject(Long id) {
-        LeaveRequest leave = getLeave(id);
-        leave.setStatus("REJECTED");
-        return toDto(leaveRequestRepository.save(leave));
-    }
+        int totalHeadcount = config.getTotalHeadcount();
+        int minCapacityPercent = config.getMinCapacityPercent();
 
-    @Override
-    public List<LeaveRequestDto> getByEmployee(Long employeeId) {
+        // 3️⃣ Load approved leaves
+        List<LeaveRequest> leaves =
+                leaveRequestRepository.findApprovedOverlappingForTeam(
+                        teamName, startDate, endDate);
 
-        EmployeeProfile employee = employeeProfileRepository
-                .findById(employeeId)
-                .orElseThrow(() ->
-                        new IllegalArgumentException("Employee not found"));
+        // 4️⃣ Count leaves per date
+        Map<LocalDate, Integer> leaveCount = new HashMap<>();
+        for (LeaveRequest leave : leaves) {
+            LocalDate d = leave.getStartDate();
+            while (!d.isAfter(leave.getEndDate())) {
+                leaveCount.put(d, leaveCount.getOrDefault(d, 0) + 1);
+                d = d.plusDays(1);
+            }
+        }
 
-        return leaveRequestRepository.findByEmployee(employee)
-                .stream()
-                .map(this::toDto)
-                .collect(Collectors.toList());
-    }
+        // 5️⃣ Calculate capacity %
+        Map<LocalDate, Double> capacityByDate = new LinkedHashMap<>();
+        boolean risky = false;
 
-    // ===== Helpers =====
+        LocalDate d = startDate;
+        while (!d.isAfter(endDate)) {
+            int onLeave = leaveCount.getOrDefault(d, 0);
+            int available = totalHeadcount - onLeave;
 
-    private LeaveRequest getLeave(Long id) {
-        return leaveRequestRepository.findById(id)
-                .orElseThrow(() ->
-                        new IllegalArgumentException("Leave not found"));
-    }
+            double capacityPercent =
+                    ((double) available / totalHeadcount) * 100;
 
-    private LeaveRequestDto toDto(LeaveRequest leave) {
-        LeaveRequestDto dto = new LeaveRequestDto();
-        dto.setId(leave.getId());
-        dto.setEmployeeId(leave.getEmployee().getId());
-        dto.setStartDate(leave.getStartDate());
-        dto.setEndDate(leave.getEndDate());
-        dto.setType(leave.getType());
-        dto.setStatus(leave.getStatus());
-        dto.setReason(leave.getReason());
-        return dto;
+            capacityByDate.put(d, capacityPercent);
+
+            if (capacityPercent < minCapacityPercent) {
+                risky = true;
+            }
+
+            d = d.plusDays(1);
+        }
+
+        // 6️⃣ Return EXACT DTO expected by tests
+        return new CapacityAnalysisResultDto(risky, capacityByDate);
     }
 }
