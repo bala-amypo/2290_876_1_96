@@ -8,6 +8,7 @@ import com.example.demo.repository.LeaveRequestRepository;
 import com.example.demo.service.LeaveRequestService;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,7 +29,6 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
     @Override
     public LeaveRequestDto create(LeaveRequestDto dto) {
 
-        // ✅ VALIDATION (fixes Swagger 500)
         EmployeeProfile employee = employeeRepo.findById(dto.getEmployeeId())
                 .orElseThrow(() ->
                         new IllegalArgumentException(
@@ -43,8 +43,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         leave.setStatus(dto.getStatus());
         leave.setReason(dto.getReason());
 
-        LeaveRequest saved = leaveRepo.save(leave);
-        return toDto(saved);
+        return toDto(leaveRepo.save(leave));
     }
 
     @Override
@@ -74,6 +73,18 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
                 .stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
+    }
+
+    // ✅ MISSING METHOD — REQUIRED BY INTERFACE
+    @Override
+    public List<LeaveRequest> getOverlappingForTeam(
+            String teamName,
+            LocalDate startDate,
+            LocalDate endDate
+    ) {
+        return leaveRepo.findApprovedOverlappingForTeam(
+                teamName, startDate, endDate
+        );
     }
 
     private LeaveRequestDto toDto(LeaveRequest leave) {
