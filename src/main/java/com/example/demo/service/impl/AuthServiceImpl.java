@@ -32,9 +32,14 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AuthResponse authenticate(AuthRequest request) {
 
-        UserAccount user = userAccountRepository
-                .findByEmail(request.getEmail())
-                .orElseThrow();
+       UserAccount user = userAccountRepository
+        .findByEmail(request.getEmail())
+        .orElseThrow(() ->
+            new ResponseStatusException(
+                HttpStatus.UNAUTHORIZED,
+                "Invalid email or password"
+            )
+        );
 
         // ✅ TESTS EXPECT EMAIL, NOT UserAccount OBJECT
         String token = tokenProvider.generateToken(user.getEmail());
