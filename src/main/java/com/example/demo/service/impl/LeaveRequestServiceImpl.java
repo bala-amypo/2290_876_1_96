@@ -8,7 +8,6 @@ import com.example.demo.repository.LeaveRequestRepository;
 import com.example.demo.service.LeaveRequestService;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,54 +19,61 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
 
     public LeaveRequestServiceImpl(
             LeaveRequestRepository leaveRepo,
-            EmployeeProfileRepository employeeRepo) {
+            EmployeeProfileRepository employeeRepo
+    ) {
         this.leaveRepo = leaveRepo;
         this.employeeRepo = employeeRepo;
     }
 
     @Override
     public LeaveRequestDto create(LeaveRequestDto dto) {
-        EmployeeProfile emp = employeeRepo.findById(dto.getEmployeeId())
-                .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+        // ✅ VALIDATION (fixes Swagger 500)
+        EmployeeProfile employee = employeeRepo.findById(dto.getEmployeeId())
+                .orElseThrow(() ->
+                        new IllegalArgumentException(
+                                "Employee not found with id: " + dto.getEmployeeId()
+                        ));
 
         LeaveRequest leave = new LeaveRequest();
-        leave.setEmployee(emp);
+        leave.setEmployee(employee);
         leave.setStartDate(dto.getStartDate());
         leave.setEndDate(dto.getEndDate());
         leave.setType(dto.getType());
+        leave.setStatus(dto.getStatus());
         leave.setReason(dto.getReason());
-        leave.setStatus("PENDING");
 
-        return toDto(leaveRepo.save(leave));
+        LeaveRequest saved = leaveRepo.save(leave);
+        return toDto(saved);
     }
 
     @Override
     public LeaveRequestDto approve(Long id) {
-        LeaveRequest leave = leaveRepo.findById(id).orElseThrow();
+        LeaveRequest leave = leaveRepo.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Leave not found"));
+
         leave.setStatus("APPROVED");
         return toDto(leaveRepo.save(leave));
     }
 
     @Override
     public LeaveRequestDto reject(Long id) {
-        LeaveRequest leave = leaveRepo.findById(id).orElseThrow();
+        LeaveRequest leave = leaveRepo.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Leave not found"));
+
         leave.setStatus("REJECTED");
         return toDto(leaveRepo.save(leave));
     }
 
     @Override
-    public List<LeaveRequestDto> getByEmployee(Long employeeId) {
-        EmployeeProfile emp = employeeRepo.findById(employeeId).orElseThrow();
-        return leaveRepo.findByEmployee(emp)
-                .stream().map(this::toDto).collect(Collectors.toList());
-    }
+    public List<LeaveRequestDto> getByEmployee(Long id) {
+        EmployeeProfile employee = employeeRepo.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Employee not found"));
 
-    @Override
-    public List<LeaveRequestDto> getOverlappingForTeam(
-            String teamName, LocalDate start, LocalDate end) {
-
-        return leaveRepo.findApprovedOverlappingForTeam(teamName, start, end)
-                .stream().map(this::toDto).collect(Collectors.toList());
+        return leaveRepo.findByEmployee(employee)
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
     }
 
     private LeaveRequestDto toDto(LeaveRequest leave) {
