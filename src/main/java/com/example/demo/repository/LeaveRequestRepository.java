@@ -3,16 +3,37 @@ package com.example.demo.repository;
 import com.example.demo.model.EmployeeProfile;
 import com.example.demo.model.LeaveRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
 
 public interface LeaveRequestRepository extends JpaRepository<LeaveRequest, Long> {
 
+    // ================= BASIC =================
+
     List<LeaveRequest> findByEmployee(EmployeeProfile employee);
-    List<LeaveRequest> findApprovedOnDate(LocalDate date);
 
+    // ================= APPROVED ON DATE =================
+    @Query("""
+        SELECT lr FROM LeaveRequest lr
+        WHERE lr.status = 'APPROVED'
+        AND :date BETWEEN lr.startDate AND lr.endDate
+    """)
+    List<LeaveRequest> findApprovedOnDate(@Param("date") LocalDate date);
 
+    // ================= OVERLAPPING FOR TEAM =================
+    @Query("""
+        SELECT lr FROM LeaveRequest lr
+        WHERE lr.status = 'APPROVED'
+        AND lr.employee.teamName = :teamName
+        AND lr.startDate <= :end
+        AND lr.endDate >= :start
+    """)
     List<LeaveRequest> findApprovedOverlappingForTeam(
-            String teamName, LocalDate start, LocalDate end);
+            @Param("teamName") String teamName,
+            @Param("start") LocalDate start,
+            @Param("end") LocalDate end
+    );
 }

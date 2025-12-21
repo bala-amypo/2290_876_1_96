@@ -5,7 +5,6 @@ import java.util.List;
 
 public interface CapacityAnalysisService {
 
-    // ✅ REQUIRED BY TESTS
     List<LocalDate> analyzeTeamCapacity(
             String teamName,
             LocalDate startDate,
