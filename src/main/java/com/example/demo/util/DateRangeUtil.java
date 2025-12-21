@@ -5,7 +5,7 @@ import java.time.temporal.ChronoUnit;
 
 public class DateRangeUtil {
 
-    public static long daysBetween(LocalDate start, LocalDate end) {
+    public static Long daysBetween(LocalDate start, LocalDate end) {
         return ChronoUnit.DAYS.between(start, end) + 1;
     }
 }

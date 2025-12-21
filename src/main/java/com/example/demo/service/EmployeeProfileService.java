@@ -15,7 +15,7 @@ public interface EmployeeProfileService {
 
     List<EmployeeProfileDto> getAll();
 
-    void deactivate(long id);
+    void deactivate(Long id);
     // ADD THESE METHODS ONLY
 
 

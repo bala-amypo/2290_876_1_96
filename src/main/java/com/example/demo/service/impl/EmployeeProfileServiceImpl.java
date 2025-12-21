@@ -61,7 +61,7 @@ public class EmployeeProfileServiceImpl implements EmployeeProfileService {
     }
 
     @Override
-    public void deactivate(long id) {
+    public void deactivate(Long id) {
         EmployeeProfile employee = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
         employee.setActive(false);
