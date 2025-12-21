@@ -15,6 +15,9 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
 
     private final LeaveRequestRepository leaveRequestRepository;
     private final TeamCapacityConfigRepository configRepository;
+    private final EmployeeProfileRepository employeeProfileRepository;
+    private final UserAccountRepository userAccountRepository;
+    private final CapacityAlertRepository capacityAlertRepository;
 
     public CapacityAnalysisServiceImpl(
             LeaveRequestRepository leaveRequestRepository,
@@ -25,6 +28,9 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
     ) {
         this.leaveRequestRepository = leaveRequestRepository;
         this.configRepository = configRepository;
+        this.employeeProfileRepository = employeeProfileRepository;
+        this.userAccountRepository = userAccountRepository;
+        this.capacityAlertRepository = capacityAlertRepository;
     }
 
     @Override
