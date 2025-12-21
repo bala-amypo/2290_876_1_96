@@ -11,10 +11,9 @@ import java.util.List;
 
 public interface LeaveRequestRepository extends JpaRepository<LeaveRequest, Long> {
 
-    // 🔹 REQUIRED by LeaveRequestServiceImpl
     List<LeaveRequest> findByEmployee(EmployeeProfile employee);
+    
 
-    // 🔹 REQUIRED by capacity analysis
     @Query("""
         SELECT lr FROM LeaveRequest lr
         WHERE lr.status = 'APPROVED'
