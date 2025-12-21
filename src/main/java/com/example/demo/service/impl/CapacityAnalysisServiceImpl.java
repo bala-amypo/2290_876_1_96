@@ -33,6 +33,23 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
         this.capacityAlertRepository = capacityAlertRepository;
     }
 
+    public CapacityAnalysisServiceImpl(
+            LeaveRequestRepository leaveRequestRepository,
+            TeamCapacityConfigRepository configRepository,
+            EmployeeProfileRepository employeeProfileRepository,
+            UserAccountRepository userAccountRepository,
+            CapacityAlertRepository capacityAlertRepository,
+            CapacityAlertRepository ignoredDuplicate
+    ) {
+        this(
+                leaveRequestRepository,
+                configRepository,
+                employeeProfileRepository,
+                userAccountRepository,
+                capacityAlertRepository
+        );
+    }
+
     @Override
     public CapacityAnalysisResultDto analyzeTeamCapacity(
             String teamName,
