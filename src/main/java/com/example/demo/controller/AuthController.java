@@ -6,6 +6,7 @@ import com.example.demo.service.AuthService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.example.demo.dto.RegisterRequest;
 
 @RestController
 @RequestMapping("/api/auth")
