@@ -68,4 +68,3 @@ public class TeamCapacityConfig {
         this.minCapacityPercent = minCapacityPercent;
     }
 }
-xxxxxxxxx
