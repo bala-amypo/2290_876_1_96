@@ -2,6 +2,7 @@ package com.example.demo.service.impl;
 
 import com.example.demo.dto.AuthRequest;
 import com.example.demo.dto.AuthResponse;
+import com.example.demo.model.UserAccount;
 import com.example.demo.repository.UserAccountRepository;
 import com.example.demo.security.JwtTokenProvider;
 import com.example.demo.service.AuthService;
@@ -26,7 +27,15 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponse authenticate(AuthRequest request) {
-        String token = tokenProvider.generateToken(request.getEmail());
-        return new AuthResponse(token);
+        UserAccount user = userRepo.findByEmail(request.getEmail())
+                .orElseThrow();
+
+        String token = tokenProvider.generateToken(user.getEmail());
+
+        return new AuthResponse(
+                token,
+                user.getId(),
+                user.getRole()
+        );
     }
 }
