@@ -12,10 +12,10 @@ import java.util.List;
 @Service
 public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
 
-    private final LeaveRequestRepository leaveRepo;
+    private final LeaveRequestRepository leaveRequestRepository;
 
-    public CapacityAnalysisServiceImpl(LeaveRequestRepository leaveRepo) {
-        this.leaveRepo = leaveRepo;
+    public CapacityAnalysisServiceImpl(LeaveRequestRepository leaveRequestRepository) {
+        this.leaveRequestRepository = leaveRequestRepository;
     }
 
     @Override
@@ -25,21 +25,22 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
             LocalDate endDate
     ) {
 
-        List<LeaveRequest> approved =
-                leaveRepo.findApprovedOverlappingForTeam(
+        List<LeaveRequest> leaves =
+                leaveRequestRepository.findApprovedOverlappingForTeam(
                         teamName, startDate, endDate);
 
-        List<LocalDate> dates = new ArrayList<>();
+        List<LocalDate> overlappingDates = new ArrayList<>();
 
-        for (LeaveRequest leave : approved) {
-            LocalDate d = leave.getStartDate();
-            while (!d.isAfter(leave.getEndDate())) {
-                if (!dates.contains(d)) {
-                    dates.add(d);
+        for (LeaveRequest leave : leaves) {
+            LocalDate date = leave.getStartDate();
+            while (!date.isAfter(leave.getEndDate())) {
+                if (!overlappingDates.contains(date)) {
+                    overlappingDates.add(date);
                 }
-                d = d.plusDays(1);
+                date = date.plusDays(1);
             }
         }
-        return dates;
+
+        return overlappingDates;
     }
 }

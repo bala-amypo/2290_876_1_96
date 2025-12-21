@@ -12,24 +12,27 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthServiceImpl implements AuthService {
 
-    private final UserAccountRepository userRepo;
-    private final BCryptPasswordEncoder encoder;
+    private final UserAccountRepository userAccountRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
     private final JwtTokenProvider tokenProvider;
 
-    // ✅ REQUIRED BY TESTS
-    public AuthServiceImpl(UserAccountRepository userRepo,
-                           BCryptPasswordEncoder encoder,
+    // ✅ REQUIRED BY TESTS (DO NOT REMOVE ANY PARAMETER)
+    public AuthServiceImpl(UserAccountRepository userAccountRepository,
+                           BCryptPasswordEncoder passwordEncoder,
                            JwtTokenProvider tokenProvider) {
-        this.userRepo = userRepo;
-        this.encoder = encoder;
+        this.userAccountRepository = userAccountRepository;
+        this.passwordEncoder = passwordEncoder;
         this.tokenProvider = tokenProvider;
     }
 
     @Override
     public AuthResponse authenticate(AuthRequest request) {
-        UserAccount user = userRepo.findByEmail(request.getEmail())
+
+        UserAccount user = userAccountRepository
+                .findByEmail(request.getEmail())
                 .orElseThrow();
 
+        // ✅ TESTS EXPECT EMAIL, NOT UserAccount OBJECT
         String token = tokenProvider.generateToken(user.getEmail());
 
         return new AuthResponse(

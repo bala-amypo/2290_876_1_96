@@ -6,6 +6,7 @@ public class AuthResponse {
     private Long userId;
     private String role;
 
+    // ✅ REQUIRED BY TESTS
     public AuthResponse(String token, Long userId, String role) {
         this.token = token;
         this.userId = userId;
