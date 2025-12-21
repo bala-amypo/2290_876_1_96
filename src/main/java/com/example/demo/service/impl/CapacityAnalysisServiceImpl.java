@@ -5,6 +5,7 @@ import com.example.demo.dto.CapacityAnalysisResultDto;
 import com.example.demo.service.CapacityAnalysisService;
 import com.example.demo.service.LeaveRequestService;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.example.demo.dto.CapacityAnalysisResultDto;
 import com.example.demo.model.LeaveRequest;
@@ -16,6 +17,9 @@ import java.util.*;
 
 @Service
 public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
+
+    @Autowired
+    LeaveRequestRepository leaveRequestRepository;
 
     private final TeamCapacityConfigRepository configRepo;
     private final EmployeeProfileRepository employeeRepo;
