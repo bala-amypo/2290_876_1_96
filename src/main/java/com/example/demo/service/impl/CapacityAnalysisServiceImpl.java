@@ -2,12 +2,14 @@ package com.example.demo.service.impl;
 
 import com.example.demo.dto.LeaveRequestDto;
 import com.example.demo.dto.CapacityAnalysisResultDto;
-import com.example.demo.repository.CapacityAlertRepository;
-import com.example.demo.repository.EmployeeProfileRepository;
-import com.example.demo.repository.TeamCapacityConfigRepository;
 import com.example.demo.service.CapacityAnalysisService;
 import com.example.demo.service.LeaveRequestService;
 import org.springframework.stereotype.Service;
+
+import com.example.demo.dto.CapacityAnalysisResultDto;
+import com.example.demo.model.LeaveRequest;
+import com.example.demo.model.TeamCapacityConfig;
+import com.example.demo.repository.*;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -65,7 +67,7 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
             LocalDate endDate
     ) {
 
-        TeamCapacityConfig config = configRepository
+        TeamCapacityConfig config = configRepo
                 .findByTeamName(teamName)
                 .orElseThrow(() ->
                         new IllegalArgumentException("Team config not found"));
