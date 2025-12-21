@@ -4,13 +4,10 @@ import com.example.demo.dto.CapacityAnalysisResultDto;
 
 import java.time.LocalDate;
 
-import java.util.List;
-
-
 public interface CapacityAnalysisService {
 
     CapacityAnalysisResultDto analyzeTeamCapacity(
-            String userEmail,
+            String teamName,
             LocalDate startDate,
             LocalDate endDate
     );
