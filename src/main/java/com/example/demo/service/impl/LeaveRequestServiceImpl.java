@@ -28,7 +28,10 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
     @Override
     public LeaveRequestDto create(LeaveRequestDto dto) {
         EmployeeProfile emp = employeeRepo.findById(dto.getEmployeeId())
-                .orElseThrow(() -> new RuntimeException("Employee not found"));
+                .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND, "Employee not found"
+        ));
+
 
         LeaveRequest leave = new LeaveRequest();
         leave.setEmployee(emp);
