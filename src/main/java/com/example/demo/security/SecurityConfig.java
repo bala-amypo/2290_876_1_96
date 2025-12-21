@@ -1,6 +1,7 @@
 package com.example.demo.security;
 
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,16 +21,27 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            // REQUIRED for Swagger POST/PUT
             .csrf(csrf -> csrf.disable())
+
+            // REQUIRED for Swagger UI
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
             .authorizeHttpRequests(auth -> auth
+                // Swagger
                 .requestMatchers(
-                        "/auth/**",
                         "/swagger-ui/**",
+                        "/swagger-ui.html",
                         "/v3/api-docs/**"
                 ).permitAll()
-                .requestMatchers("/api/**").permitAll() // TEMP for testing
-                .anyRequest().authenticated()
+
+                // Auth API
+                .requestMatchers("/api/auth/**").permitAll()
+
+                // TEMP: allow all API calls (tests + Swagger)
+                .requestMatchers("/api/**").permitAll()
+
+                .anyRequest().permitAll()
             );
 
         return http.build();
@@ -37,9 +49,12 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
+
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of("*"));
-        config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
+        config.setAllowedMethods(
+                List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")
+        );
         config.setAllowedHeaders(List.of("*"));
 
         UrlBasedCorsConfigurationSource source =
