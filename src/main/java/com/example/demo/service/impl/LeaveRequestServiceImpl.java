@@ -98,4 +98,17 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         dto.setReason(leave.getReason());
         return dto;
     }
+    @Override
+    public List<LeaveRequestDto> getOverlappingForTeam(
+            String teamName,
+            LocalDate startDate,
+            LocalDate endDate
+    ) {
+        return leaveRepo
+                .findApprovedOverlappingForTeam(teamName, startDate, endDate)
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
 }
