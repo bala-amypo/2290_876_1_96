@@ -22,4 +22,10 @@ public class AuthController {
     public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
         return ResponseEntity.ok(authService.authenticate(request));
     }
+    @PostMapping("/register")
+public ResponseEntity<String> register(@RequestBody RegisterRequest request) {
+    authService.register(request);
+    return ResponseEntity.ok("User registered successfully");
+}
+
 }

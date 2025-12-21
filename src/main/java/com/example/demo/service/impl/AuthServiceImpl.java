@@ -6,6 +6,7 @@ import com.example.demo.model.UserAccount;
 import com.example.demo.repository.UserAccountRepository;
 import com.example.demo.security.JwtTokenProvider;
 import com.example.demo.service.AuthService;
+import com.example.demo.dto.RegisterRequest;
 
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
