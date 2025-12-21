@@ -50,4 +50,25 @@ public class AuthServiceImpl implements AuthService {
                 user.getRole()
         );
     }
+    @Override
+public void register(RegisterRequest request) {
+
+    if (userAccountRepository.findByEmail(request.getEmail()).isPresent()) {
+        throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Email already registered"
+        );
+    }
+
+    UserAccount user = new UserAccount();
+    user.setUsername(request.getUsername());
+    user.setEmail(request.getEmail());
+    user.setRole(request.getRole());
+
+    // 🔐 Encrypt password
+    user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+    userAccountRepository.save(user);
+}
+
 }
