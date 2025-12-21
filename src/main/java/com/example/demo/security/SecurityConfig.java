@@ -32,7 +32,11 @@ public class SecurityConfig {
                 .requestMatchers(
                         "/swagger-ui/**",
                         "/swagger-ui.html",
-                        "/v3/api-docs/**"
+                        "/v3/api-docs/**",
+                        "/api/capacity-alerts",
+                        "/api/employees",
+                        "/api/leaves",
+                        "/api/capacity-rules"
                 ).permitAll()
 
                 // Auth API
