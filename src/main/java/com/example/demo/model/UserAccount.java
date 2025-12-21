@@ -17,22 +17,18 @@ public class UserAccount {
     @JoinColumn(name = "employee_profile_id")
     private EmployeeProfile employeeProfile;
 
-    // ✅ REQUIRED BY TESTS
     public Long getId() {
         return id;
     }
 
-    // ✅ REQUIRED BY TESTS
     public void setId(Long id) {
         this.id = id;
     }
 
-    // ✅ REQUIRED BY TESTS
     public String getEmail() {
         return email;
     }
 
-    // ✅ REQUIRED BY TESTS
     public String getRole() {
         return role;
     }
