@@ -1,9 +1,11 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.dto.CapacityAnalysisResultDto;
+import com.example.demo.model.EmployeeProfile;
 import com.example.demo.model.LeaveRequest;
 import com.example.demo.model.TeamCapacityConfig;
-import com.example.demo.repository.LeaveRequestRepository;
-import com.example.demo.repository.TeamCapacityConfigRepository;
+import com.example.demo.model.UserAccount;
+import com.example.demo.repository.*;
 import com.example.demo.service.CapacityAnalysisService;
 import org.springframework.stereotype.Service;
 
@@ -15,63 +17,77 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
 
     private final LeaveRequestRepository leaveRequestRepository;
     private final TeamCapacityConfigRepository configRepository;
+    private final EmployeeProfileRepository employeeProfileRepository;
+    private final UserAccountRepository userAccountRepository;
+    private final CapacityAlertRepository capacityAlertRepository;
 
+    // ✅ CONSTRUCTOR REQUIRED BY TESTS
     public CapacityAnalysisServiceImpl(
             LeaveRequestRepository leaveRequestRepository,
-            TeamCapacityConfigRepository configRepository
+            TeamCapacityConfigRepository configRepository,
+            EmployeeProfileRepository employeeProfileRepository,
+            UserAccountRepository userAccountRepository,
+            CapacityAlertRepository capacityAlertRepository
     ) {
         this.leaveRequestRepository = leaveRequestRepository;
         this.configRepository = configRepository;
+        this.employeeProfileRepository = employeeProfileRepository;
+        this.userAccountRepository = userAccountRepository;
+        this.capacityAlertRepository = capacityAlertRepository;
     }
 
     @Override
-    public List<LocalDate> analyzeTeamCapacity(
-            String teamName,
+    public CapacityAnalysisResultDto analyzeTeamCapacity(
+            String userEmail,
             LocalDate startDate,
             LocalDate endDate
     ) {
 
+        // 🔹 Resolve user
+        UserAccount user = userAccountRepository
+                .findByEmail(userEmail)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        EmployeeProfile profile = user.getEmployeeProfile();
+        if (profile == null) {
+            throw new IllegalArgumentException("Employee profile missing");
+        }
+
+        String teamName = profile.getTeamName();
+
         TeamCapacityConfig config = configRepository
                 .findByTeamName(teamName)
-                .orElseThrow(() ->
-                        new IllegalArgumentException("Team config not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Team config not found"));
 
         int totalHeadcount = config.getTotalHeadcount();
-        int minCapacityPercent = config.getMinCapacityPercent();
-
-        int minAvailableEmployees =
-                (int) Math.ceil(totalHeadcount * (minCapacityPercent / 100.0));
+        int minAvailable =
+                (int) Math.ceil(totalHeadcount * (config.getMinCapacityPercent() / 100.0));
 
         List<LeaveRequest> leaves =
                 leaveRequestRepository.findApprovedOverlappingForTeam(
                         teamName, startDate, endDate);
 
-        Map<LocalDate, Integer> leaveCountByDate = new HashMap<>();
+        Map<LocalDate, Integer> leaveCount = new HashMap<>();
 
         for (LeaveRequest leave : leaves) {
-            LocalDate date = leave.getStartDate();
-            while (!date.isAfter(leave.getEndDate())) {
-                leaveCountByDate.put(
-                        date,
-                        leaveCountByDate.getOrDefault(date, 0) + 1
-                );
-                date = date.plusDays(1);
+            LocalDate d = leave.getStartDate();
+            while (!d.isAfter(leave.getEndDate())) {
+                leaveCount.put(d, leaveCount.getOrDefault(d, 0) + 1);
+                d = d.plusDays(1);
             }
         }
 
-        List<LocalDate> insufficientCapacityDates = new ArrayList<>();
+        List<LocalDate> insufficientDates = new ArrayList<>();
+        LocalDate d = startDate;
 
-        LocalDate date = startDate;
-        while (!date.isAfter(endDate)) {
-            int onLeave = leaveCountByDate.getOrDefault(date, 0);
-            int available = totalHeadcount - onLeave;
-
-            if (available < minAvailableEmployees) {
-                insufficientCapacityDates.add(date);
+        while (!d.isAfter(endDate)) {
+            int onLeave = leaveCount.getOrDefault(d, 0);
+            if ((totalHeadcount - onLeave) < minAvailable) {
+                insufficientDates.add(d);
             }
-            date = date.plusDays(1);
+            d = d.plusDays(1);
         }
 
-        return insufficientCapacityDates;
+        return new CapacityAnalysisResultDto(insufficientDates);
     }
 }
