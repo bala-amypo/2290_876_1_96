@@ -31,6 +31,14 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
 
     @Override
     public LeaveRequestDto create(LeaveRequestDto dto) {
+
+        if (dto.getStartDate().isAfter(dto.getEndDate())) {
+        throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Invalid Date Range: start date"
+        );
+    }
+
         EmployeeProfile emp = employeeRepo.findById(dto.getEmployeeId())
                 .orElseThrow(() -> new ResponseStatusException(
                 HttpStatus.NOT_FOUND, "Employee not found"
