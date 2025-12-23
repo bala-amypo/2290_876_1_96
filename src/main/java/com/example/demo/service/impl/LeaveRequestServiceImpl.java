@@ -69,15 +69,16 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
 
 
     @Override
-    public LeaveRequestDto approve(Long id) {
+public LeaveRequestDto reject(Long id) {
     LeaveRequest leave = leaveRepo.findById(id)
             .orElseThrow(() -> new ResponseStatusException(
                     HttpStatus.NOT_FOUND,
                     "Leave request not found"
             ));
-    leave.setStatus("APPROVED");
+    leave.setStatus("REJECTED");
     return toDto(leaveRepo.save(leave));
 }
+
 
 
     @Override
