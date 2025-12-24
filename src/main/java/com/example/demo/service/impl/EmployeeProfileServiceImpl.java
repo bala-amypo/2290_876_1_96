@@ -1,79 +1,75 @@
+package com.example.demo.service.impl;
+
+import com.example.demo.dto.CapacityAnalysisResultDto;
+import com.example.demo.exception.BadRequestException;
+import com.example.demo.model.CapacityAlert;
+import com.example.demo.model.TeamCapacityConfig;
+import com.example.demo.repository.CapacityAlertRepository;
+import com.example.demo.repository.EmployeeProfileRepository;
+import com.example.demo.repository.TeamCapacityConfigRepository;
+import com.example.demo.service.CapacityAnalysisService;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
-public class EmployeeProfileServiceImpl implements EmployeeProfileService {
+public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
 
-    private final EmployeeProfileRepository repository;
+    private final TeamCapacityConfigRepository configRepo;
+    private final EmployeeProfileRepository employeeRepo;
+    private final CapacityAlertRepository alertRepo;
 
-    public EmployeeProfileServiceImpl(EmployeeProfileRepository repository) {
-        this.repository = repository;
+    public CapacityAnalysisServiceImpl(
+            TeamCapacityConfigRepository configRepo,
+            EmployeeProfileRepository employeeRepo,
+            CapacityAlertRepository alertRepo) {
+        this.configRepo = configRepo;
+        this.employeeRepo = employeeRepo;
+        this.alertRepo = alertRepo;
     }
 
     @Override
-    public EmployeeProfileDto create(EmployeeProfileDto dto) {
-        EmployeeProfile employee = new EmployeeProfile();
-        employee.setEmployeeId(dto.getEmployeeId());
-        employee.setFullName(dto.getFullName());   // ✅ FIXED
-        employee.setEmail(dto.getEmail());
-        employee.setTeamName(dto.getTeamName());
-        employee.setRole(dto.getRole());
+    public CapacityAnalysisResultDto analyzeTeamCapacity(
+            String teamName,
+            LocalDate start,
+            LocalDate end) {
 
-        repository.save(employee);
-        return mapToDto(employee);
+        if (start == null || end == null || start.isAfter(end)) {
+            throw new BadRequestException("Invalid date range");
+        }
+
+        TeamCapacityConfig config = configRepo.findByTeamName(teamName)
+                .orElseThrow(() -> new BadRequestException("Capacity config not found"));
+
+        int headcount = employeeRepo.findByTeamName(teamName).size();
+        List<LocalDate> lowCapacityDates = new ArrayList<>();
+
+        for (LocalDate date = start; !date.isAfter(end); date = date.plusDays(1)) {
+            double capacityPercent = (headcount * 100.0) / config.getTotalHeadcount();
+
+            if (capacityPercent < config.getMinCapacityPercent()) {
+                CapacityAlert alert = new CapacityAlert(
+                        teamName,
+                        date,
+                        "LOW",
+                        "Capacity below threshold"
+                );
+                alertRepo.save(alert);
+                lowCapacityDates.add(date);
+            }
+        }
+
+        return new CapacityAnalysisResultDto(teamName, lowCapacityDates);
     }
 
     @Override
-    public EmployeeProfileDto update(Long id, EmployeeProfileDto dto) {
-        EmployeeProfile employee = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Employee not found"));
-
-        employee.setFullName(dto.getFullName());   // ✅ FIXED
-        employee.setEmail(dto.getEmail());
-        employee.setTeamName(dto.getTeamName());
-        employee.setRole(dto.getRole());
-
-        repository.save(employee);
-        return mapToDto(employee);
-    }
-
-    @Override
-    public EmployeeProfileDto getById(Long id) {
-        EmployeeProfile employee = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Employee not found"));
-        return mapToDto(employee);
-    }
-
-    @Override
-    public List<EmployeeProfileDto> getByTeam(String teamName) {
-        return repository.findByTeamName(teamName)
-                .stream()
-                .map(this::mapToDto)
-                .toList();
-    }
-
-    @Override
-    public List<EmployeeProfileDto> getAll() {
-        return repository.findAll()
-                .stream()
-                .map(this::mapToDto)
-                .toList();
-    }
-
-    @Override
-    public void deactivate(Long id) {
-        EmployeeProfile employee = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Employee not found"));
-        employee.deactivate();
-        repository.save(employee);
-    }
-
-    private EmployeeProfileDto mapToDto(EmployeeProfile employee) {
-        EmployeeProfileDto dto = new EmployeeProfileDto();
-        dto.setId(employee.getId());
-        dto.setEmployeeId(employee.getEmployeeId());
-        dto.setFullName(employee.getFullName());   // ✅ FIXED
-        dto.setEmail(employee.getEmail());
-        dto.setTeamName(employee.getTeamName());
-        dto.setRole(employee.getRole());
-        dto.setActive(employee.getActive());
-        return dto;
+    public List<LocalDate> getOverlappingDates(String teamName, LocalDate start, LocalDate end) {
+        List<LocalDate> dates = new ArrayList<>();
+        for (LocalDate d = start; !d.isAfter(end); d = d.plusDays(1)) {
+            dates.add(d);
+        }
+        return dates;
     }
 }

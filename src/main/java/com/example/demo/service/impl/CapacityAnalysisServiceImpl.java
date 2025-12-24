@@ -24,7 +24,8 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
     public CapacityAnalysisServiceImpl(
             TeamCapacityConfigRepository configRepo,
             EmployeeProfileRepository employeeRepo,
-            CapacityAlertRepository alertRepo) {
+            CapacityAlertRepository alertRepo
+    ) {
         this.configRepo = configRepo;
         this.employeeRepo = employeeRepo;
         this.alertRepo = alertRepo;
@@ -34,8 +35,8 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
     public CapacityAnalysisResultDto analyzeTeamCapacity(
             String teamName,
             LocalDate start,
-            LocalDate end) {
-
+            LocalDate end
+    ) {
         if (start == null || end == null || start.isAfter(end)) {
             throw new BadRequestException("Invalid date range");
         }
@@ -47,9 +48,12 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
         List<LocalDate> lowCapacityDates = new ArrayList<>();
 
         for (LocalDate date = start; !date.isAfter(end); date = date.plusDays(1)) {
-            double capacityPercent = (headcount * 100.0) / config.getTotalHeadcount();
+
+            double capacityPercent =
+                    (headcount * 100.0) / config.getTotalHeadcount();
 
             if (capacityPercent < config.getMinCapacityPercent()) {
+
                 CapacityAlert alert = new CapacityAlert(
                         teamName,
                         date,
@@ -65,7 +69,11 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
     }
 
     @Override
-    public List<LocalDate> getOverlappingDates(String teamName, LocalDate start, LocalDate end) {
+    public List<LocalDate> getOverlappingDates(
+            String teamName,
+            LocalDate start,
+            LocalDate end
+    ) {
         List<LocalDate> dates = new ArrayList<>();
         for (LocalDate d = start; !d.isAfter(end); d = d.plusDays(1)) {
             dates.add(d);
