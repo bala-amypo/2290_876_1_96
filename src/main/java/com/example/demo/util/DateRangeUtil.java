@@ -1,11 +1,18 @@
 package com.example.demo.util;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DateRangeUtil {
 
-    public static Long daysBetween(LocalDate start, LocalDate end) {
-        return ChronoUnit.DAYS.between(start, end) + 1;
+    public static List<LocalDate> daysBetween(LocalDate start, LocalDate end) {
+        List<LocalDate> dates = new ArrayList<>();
+        LocalDate d = start;
+        while (!d.isAfter(end)) {
+            dates.add(d);
+            d = d.plusDays(1);
+        }
+        return dates;
     }
 }
