@@ -37,7 +37,6 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
             LocalDate startDate,
             LocalDate endDate
     ) {
-
         if (startDate == null || endDate == null || startDate.isAfter(endDate)) {
             throw new BadRequestException("Invalid date range");
         }
@@ -53,7 +52,7 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
             double capacityPercent =
                     (headcount * 100.0) / config.getTotalHeadcount();
 
-            // ✅ BOOLEAN condition ONLY
+            // ✅ BOOLEAN CONDITION — THIS FIXES YOUR ERROR
             if (capacityPercent < config.getMinCapacityPercent()) {
 
                 CapacityAlert alert = new CapacityAlert(
