@@ -6,28 +6,28 @@ import java.util.Map;
 public class CapacityAnalysisResultDto {
 
     private String teamName;
-    private boolean risky;
     private Map<LocalDate, Integer> capacityByDate;
+    private boolean risky;
 
     public CapacityAnalysisResultDto(
             String teamName,
-            boolean risky,
-            Map<LocalDate, Integer> capacityByDate
+            Map<LocalDate, Integer> capacityByDate,
+            boolean risky
     ) {
         this.teamName = teamName;
-        this.risky = risky;
         this.capacityByDate = capacityByDate;
+        this.risky = risky;
     }
 
     public String getTeamName() {
         return teamName;
     }
 
-    public boolean isRisky() {
-        return risky;
-    }
-
     public Map<LocalDate, Integer> getCapacityByDate() {
         return capacityByDate;
+    }
+
+    public boolean isRisky() {
+        return risky;
     }
 }
