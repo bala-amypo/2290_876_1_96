@@ -8,6 +8,7 @@ import com.example.demo.repository.EmployeeProfileRepository;
 import com.example.demo.repository.LeaveRequestRepository;
 import com.example.demo.service.LeaveRequestService;
 import org.springframework.stereotype.Service;
+import java.util.List;
 
 import java.time.LocalDate;
 
