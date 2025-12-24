@@ -21,14 +21,14 @@ public class EmployeeProfileServiceImpl implements EmployeeProfileService {
 
     @Override
     public EmployeeProfileDto update(Long id, EmployeeProfileDto dto) {
-        EmployeeProfile emp = repo.findById(id)
+        EmployeeProfile e = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
 
-        emp.setName(dto.getName());
-        emp.setTeamName(dto.getTeamName());
-        emp.setActive(dto.isActive());
+        e.setEmail(dto.getEmail());
+        e.setTeamName(dto.getTeamName());
+        e.setActive(dto.isActive());
 
-        return toDto(repo.save(emp));
+        return toDto(repo.save(e));
     }
 
     @Override
@@ -39,7 +39,7 @@ public class EmployeeProfileServiceImpl implements EmployeeProfileService {
     }
 
     @Override
-    public List<EmployeeProfileDto> getByTeam(String teamName) {
+    public List<EmployeeProfileDto> getEmployeesByTeam(String teamName) {
         return repo.findByTeamNameAndActiveTrue(teamName)
                 .stream()
                 .map(this::toDto)
@@ -47,18 +47,26 @@ public class EmployeeProfileServiceImpl implements EmployeeProfileService {
     }
 
     @Override
+    public List<EmployeeProfileDto> getAll() {
+        return repo.findAll()
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public void deactivate(Long id) {
-        EmployeeProfile emp = repo.findById(id)
+        EmployeeProfile e = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
 
-        emp.setActive(false);
-        repo.save(emp);
+        e.setActive(false);
+        repo.save(e);
     }
 
     private EmployeeProfileDto toDto(EmployeeProfile e) {
         return new EmployeeProfileDto(
                 e.getId(),
-                e.getName(),
+                e.getEmail(),
                 e.getTeamName(),
                 e.isActive()
         );
