@@ -25,11 +25,4 @@ public interface LeaveRequestRepository extends JpaRepository<LeaveRequest, Long
             @Param("start") LocalDate start,
             @Param("end") LocalDate end
     );
-
-    @Query("""
-        SELECT lr FROM LeaveRequest lr
-        WHERE lr.status = 'APPROVED'
-        AND :date BETWEEN lr.startDate AND lr.endDate
-    """)
-    List<LeaveRequest> findApprovedOnDate(@Param("date") LocalDate date);
 }
