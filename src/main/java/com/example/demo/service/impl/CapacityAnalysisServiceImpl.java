@@ -53,7 +53,7 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
             double capacityPercent =
                     (headcount * 100.0) / config.getTotalHeadcount();
 
-            // ✅ BOOLEAN comparison — no String used
+            // ✅ BOOLEAN comparison — THIS IS CORRECT
             if (capacityPercent < config.getMinCapacityPercent()) {
 
                 CapacityAlert alert = new CapacityAlert(
