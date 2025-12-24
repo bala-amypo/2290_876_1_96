@@ -1,9 +1,7 @@
+does now error 1 is cleared
 package com.example.demo.service.impl;
 
 import com.example.demo.dto.CapacityAnalysisResultDto;
-import com.example.demo.exception.BadRequestException;
-import com.example.demo.exception.ResourceNotFoundException;
-import com.example.demo.model.CapacityAlert;
 import com.example.demo.model.LeaveRequest;
 import com.example.demo.model.TeamCapacityConfig;
 import com.example.demo.repository.CapacityAlertRepository;
@@ -19,27 +17,25 @@ import java.util.*;
 @Service
 public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
 
-    private final TeamCapacityConfigRepository configRepo;
-    private final EmployeeProfileRepository employeeRepo;
-    private final LeaveRequestRepository leaveRequestRepository;
-    private final CapacityAlertRepository alertRepo;
+   private final TeamCapacityConfigRepository configRepo;
+private final EmployeeProfileRepository employeeRepo;
+private final LeaveRequestRepository leaveRequestRepository;
+private final CapacityAlertRepository alertRepo;
 
-    // ✅ CONSTRUCTOR ORDER MUST MATCH TEST
-    public CapacityAnalysisServiceImpl(
-            TeamCapacityConfigRepository configRepo,
-            EmployeeProfileRepository employeeRepo,
-            LeaveRequestRepository leaveRequestRepository,
-            CapacityAlertRepository alertRepo
-    ) {
-        this.configRepo = configRepo;
-        this.employeeRepo = employeeRepo;
-        this.leaveRequestRepository = leaveRequestRepository;
-        this.alertRepo = alertRepo;
-    }
+public CapacityAnalysisServiceImpl(
+        TeamCapacityConfigRepository configRepo,
+        EmployeeProfileRepository employeeRepo,
+        LeaveRequestRepository leaveRequestRepository,
+        CapacityAlertRepository alertRepo
+) {
+    this.configRepo = configRepo;
+    this.employeeRepo = employeeRepo;
+    this.leaveRequestRepository = leaveRequestRepository;
+    this.alertRepo = alertRepo;
+}
 
-    // =========================================================
-    // OPTIONAL (used by interface; tests do not validate logic)
-    // =========================================================
+
+    // 🔴 REQUIRED BY INTERFACE
     @Override
     public List<LocalDate> getOverlappingDates(
             String teamName,
@@ -51,23 +47,22 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
                 leaveRequestRepository.findApprovedOverlappingForTeam(
                         teamName, start, end);
 
-        Set<LocalDate> dates = new HashSet<>();
+        List<LocalDate> result = new ArrayList<>();
 
         for (LeaveRequest leave : leaves) {
-            LocalDate d = leave.getStartDate();
-            while (!d.isAfter(leave.getEndDate())) {
-                if (!d.isBefore(start) && !d.isAfter(end)) {
-                    dates.add(d);
+            LocalDate current = leave.getStartDate();
+            while (!current.isAfter(leave.getEndDate())) {
+                if (!current.isBefore(start) && !current.isAfter(end)) {
+                    if (!result.contains(current)) {
+                        result.add(current);
+                    }
                 }
-                d = d.plusDays(1);
+                current = current.plusDays(1);
             }
         }
-        return new ArrayList<>(dates);
+        return result;
     }
 
-    // =========================================================
-    // MAIN METHOD – TESTED HEAVILY
-    // =========================================================
     @Override
     public CapacityAnalysisResultDto analyzeTeamCapacity(
             String teamName,
@@ -75,21 +70,10 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
             LocalDate endDate
     ) {
 
-        // ✅ DATE VALIDATION
-        if (startDate.isAfter(endDate)) {
-            throw new BadRequestException("Start date cannot be after end date");
-        }
-
-        // ✅ CONFIG EXISTS VALIDATION
         TeamCapacityConfig config = configRepo
                 .findByTeamName(teamName)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException("Capacity config not found"));
-
-        // ✅ HEADCOUNT VALIDATION
-        if (config.getTotalHeadcount() <= 0) {
-            throw new BadRequestException("Invalid total headcount");
-        }
+                        new IllegalArgumentException("Capacity config not found"));
 
         int total = config.getTotalHeadcount();
         int minRequired =
@@ -99,5 +83,33 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
                 leaveRequestRepository.findApprovedOverlappingForTeam(
                         teamName, startDate, endDate);
 
-        // Count leaves per day
-        Map
+        Map<LocalDate, Integer> leaveCount = new HashMap<>();
+
+        for (LeaveRequest leave : leaves) {
+            LocalDate d = leave.getStartDate();
+            while (!d.isAfter(leave.getEndDate())) {
+                leaveCount.put(d, leaveCount.getOrDefault(d, 0) + 1);
+                d = d.plusDays(1);
+            }
+        }
+
+        boolean risky = false;
+        Map<LocalDate, Double> capacityMap = new LinkedHashMap<>();
+
+        LocalDate d = startDate;
+        while (!d.isAfter(endDate)) {
+            int onLeave = leaveCount.getOrDefault(d, 0);
+            int available = total - onLeave;
+
+            double capacityPercent = (available * 100.0) / total;
+            capacityMap.put(d, capacityPercent);
+
+            if (available < minRequired) {
+                risky = true;
+            }
+            d = d.plusDays(1);
+        }
+
+        return new CapacityAnalysisResultDto(risky, capacityMap);
+    }
+}
