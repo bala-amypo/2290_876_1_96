@@ -2,6 +2,7 @@ package com.example.demo.service.impl;
 
 import com.example.demo.dto.AuthRequest;
 import com.example.demo.dto.AuthResponse;
+import com.example.demo.dto.RegisterRequest;
 import com.example.demo.exception.BadRequestException;
 import com.example.demo.model.UserAccount;
 import com.example.demo.repository.UserAccountRepository;
@@ -17,7 +18,7 @@ public class AuthServiceImpl implements AuthService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtTokenProvider tokenProvider;
 
-    // ✅ REQUIRED BY TESTS (DO NOT CHANGE ORDER OR TYPES)
+    // ✅ REQUIRED BY TESTS — DO NOT CHANGE
     public AuthServiceImpl(
             UserAccountRepository userAccountRepository,
             BCryptPasswordEncoder passwordEncoder,
@@ -28,6 +29,9 @@ public class AuthServiceImpl implements AuthService {
         this.tokenProvider = tokenProvider;
     }
 
+    // =================================================
+    // LOGIN
+    // =================================================
     @Override
     public AuthResponse authenticate(AuthRequest request) {
 
@@ -40,14 +44,32 @@ public class AuthServiceImpl implements AuthService {
             throw new BadRequestException("Invalid email or password");
         }
 
-        // ✅ MUST PASS UserAccount (NOT String)
         String token = tokenProvider.generateToken(user);
 
+        // ✅ AuthResponse has ONLY 3 args
         return new AuthResponse(
                 token,
                 user.getId(),
-                user.getEmail(),
-                user.getRole()
+                user.getEmail()
         );
+    }
+
+    // =================================================
+    // REGISTER
+    // =================================================
+    @Override
+    public void register(RegisterRequest request) {
+
+        if (userAccountRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new BadRequestException("Email already exists");
+        }
+
+        UserAccount user = new UserAccount();
+        user.setUsername(request.getUsername());
+        user.setEmail(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRole(request.getRole());
+
+        userAccountRepository.save(user);
     }
 }
