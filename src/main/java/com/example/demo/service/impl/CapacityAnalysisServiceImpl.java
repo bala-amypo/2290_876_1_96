@@ -60,6 +60,7 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
                         "LOW",
                         "Capacity below threshold"
                 );
+
                 alertRepo.save(alert);
                 lowCapacityDates.add(date);
             }
