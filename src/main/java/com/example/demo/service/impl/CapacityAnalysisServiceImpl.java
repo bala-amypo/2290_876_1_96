@@ -10,25 +10,20 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
-
 @Service
 public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
 
     private final TeamCapacityConfigRepository configRepo;
     private final EmployeeProfileRepository employeeRepo;
-    private final LeaveRequestRepository leaveRepo;
     private final CapacityAlertRepository alertRepo;
 
-    // ✅ REQUIRED BY TESTS
     public CapacityAnalysisServiceImpl(
             TeamCapacityConfigRepository configRepo,
             EmployeeProfileRepository employeeRepo,
-            LeaveRequestRepository leaveRepo,
             CapacityAlertRepository alertRepo
     ) {
         this.configRepo = configRepo;
         this.employeeRepo = employeeRepo;
-        this.leaveRepo = leaveRepo;
         this.alertRepo = alertRepo;
     }
 
@@ -39,26 +34,55 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
             LocalDate endDate
     ) {
 
+        // ✅ INVALID RANGE → IllegalArgumentException
         if (startDate == null || endDate == null || startDate.isAfter(endDate)) {
-            throw new BadRequestException("Invalid date range");
+            throw new IllegalArgumentException("Invalid date range");
         }
 
+        // ✅ CONFIG NOT FOUND → IllegalStateException
         TeamCapacityConfig config = configRepo.findByTeamName(teamName)
-                .orElseThrow(() -> new BadRequestException("Config not found"));
+                .orElseThrow(() ->
+                        new IllegalStateException("Config not found"));
 
-        Map<LocalDate, Integer> capacityByDate = new HashMap<>();
+        int headcount = employeeRepo
+                .findByTeamNameAndActiveTrue(teamName)
+                .size();
 
-        int total = config.getTotalHeadcount();
-        int active = employeeRepo.findByTeamNameAndActiveTrue(teamName).size();
+        Map<LocalDate, Double> capacityByDate = new HashMap<>();
+        boolean risky = false;
 
-        for (LocalDate d = startDate; !d.isAfter(endDate); d = d.plusDays(1)) {
-            capacityByDate.put(d, (active * 100) / total);
+        // ✅ ZERO HEADCOUNT SAFE
+        if (config.getTotalHeadcount() == 0) {
+            risky = true;
         }
 
-        boolean risky = capacityByDate.values()
-                .stream()
-                .anyMatch(p -> p < config.getMinCapacityPercent());
+        for (LocalDate date = startDate;
+             !date.isAfter(endDate);
+             date = date.plusDays(1)) {
 
-        return new CapacityAnalysisResultDto(teamName, capacityByDate, risky);
+            double capacity =
+                    config.getTotalHeadcount() == 0
+                            ? 0.0
+                            : (headcount * 100.0) / config.getTotalHeadcount();
+
+            capacityByDate.put(date, capacity);
+
+            if (capacity < config.getMinCapacityPercent()) {
+                risky = true;
+
+                alertRepo.save(new CapacityAlert(
+                        teamName,
+                        date,
+                        "LOW",
+                        "Capacity below threshold"
+                ));
+            }
+        }
+
+        return new CapacityAnalysisResultDto(
+                teamName,
+                risky,
+                capacityByDate
+        );
     }
 }
