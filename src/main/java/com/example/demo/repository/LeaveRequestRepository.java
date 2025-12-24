@@ -25,4 +25,7 @@ public interface LeaveRequestRepository extends JpaRepository<LeaveRequest, Long
             @Param("start") LocalDate start,
             @Param("end") LocalDate end
     );
+
+    // ✅ REQUIRED BY TEST
+    List<LeaveRequest> findApprovedOnDate(LocalDate date);
 }
