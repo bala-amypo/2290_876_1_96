@@ -34,11 +34,11 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
     @Override
     public CapacityAnalysisResultDto analyzeTeamCapacity(
             String teamName,
-            LocalDate start,
-            LocalDate end
+            LocalDate startDate,
+            LocalDate endDate
     ) {
 
-        if (start == null || end == null || start.isAfter(end)) {
+        if (startDate == null || endDate == null || startDate.isAfter(endDate)) {
             throw new BadRequestException("Invalid date range");
         }
 
@@ -48,18 +48,19 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
         int headcount = employeeRepo.findByTeamName(teamName).size();
         List<LocalDate> lowCapacityDates = new ArrayList<>();
 
-        for (LocalDate date = start; !date.isAfter(end); date = date.plusDays(1)) {
+        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
 
             double capacityPercent =
                     (headcount * 100.0) / config.getTotalHeadcount();
 
+            // ✅ BOOLEAN condition — FIXED
             if (capacityPercent < config.getMinCapacityPercent()) {
 
                 CapacityAlert alert = new CapacityAlert(
                         teamName,
                         date,
-                        "LOW",                      // ✅ String
-                        "Capacity below threshold" // ✅ String
+                        "LOW",
+                        "Capacity below threshold"
                 );
 
                 alertRepo.save(alert);
@@ -73,11 +74,11 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
     @Override
     public List<LocalDate> getOverlappingDates(
             String teamName,
-            LocalDate start,
-            LocalDate end
+            LocalDate startDate,
+            LocalDate endDate
     ) {
         List<LocalDate> dates = new ArrayList<>();
-        for (LocalDate d = start; !d.isAfter(end); d = d.plusDays(1)) {
+        for (LocalDate d = startDate; !d.isAfter(endDate); d = d.plusDays(1)) {
             dates.add(d);
         }
         return dates;
