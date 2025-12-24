@@ -17,4 +17,7 @@ public interface CapacityAnalysisService {
             LocalDate start,
             LocalDate end
     );
+    CapacityAnalysisResultDto analyzeTeamCapacity(String team, LocalDate start, LocalDate end);
+List<LocalDate> getOverlappingDates(String team, LocalDate start, LocalDate end);
+
 }
