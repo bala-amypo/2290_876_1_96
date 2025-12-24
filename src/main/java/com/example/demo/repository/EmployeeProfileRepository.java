@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface EmployeeProfileRepository extends JpaRepository<EmployeeProfile, Long> {
     List<EmployeeProfile> findByTeamName(String teamName);
-     List<EmployeeProfile> findByTeamNameAndActiveTrue(String teamName);
-
+    List<EmployeeProfile> findByTeamNameAndActiveTrue(String teamName);
+    
 }
 
