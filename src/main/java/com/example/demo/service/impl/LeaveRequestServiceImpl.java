@@ -54,4 +54,10 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         leave.setApproved(false);
         return leaveRepo.save(leave);
     }
+    @Override
+public List<LeaveRequest> getOverlappingForTeam(
+        String team, LocalDate start, LocalDate end) {
+    return leaveRepo.findOverlappingLeavesForTeam(team, start, end);
+}
+
 }

@@ -1,6 +1,6 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.entity.EmployeeProfile;
+import com.example.demo.model.EmployeeProfile;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.EmployeeProfileRepository;
 import com.example.demo.service.EmployeeProfileService;
@@ -39,6 +39,11 @@ public class EmployeeProfileServiceImpl implements EmployeeProfileService {
     @Override
     public List<EmployeeProfile> getByTeam(String teamName) {
         return repository.findByTeamName(teamName);
+    }
+
+    @Override
+    public List<EmployeeProfile> getAll() {
+        return repository.findAll();
     }
 
     @Override
