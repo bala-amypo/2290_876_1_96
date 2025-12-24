@@ -37,6 +37,7 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
             LocalDate start,
             LocalDate end
     ) {
+
         if (start == null || end == null || start.isAfter(end)) {
             throw new BadRequestException("Invalid date range");
         }
@@ -44,21 +45,21 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
         TeamCapacityConfig config = configRepo.findByTeamName(teamName)
                 .orElseThrow(() -> new BadRequestException("Capacity config not found"));
 
-        int activeEmployees = employeeRepo.findByTeamName(teamName).size();
+        int headcount = employeeRepo.findByTeamName(teamName).size();
         List<LocalDate> lowCapacityDates = new ArrayList<>();
 
         for (LocalDate date = start; !date.isAfter(end); date = date.plusDays(1)) {
 
             double capacityPercent =
-                    (activeEmployees * 100.0) / config.getTotalHeadcount();
+                    (headcount * 100.0) / config.getTotalHeadcount();
 
             if (capacityPercent < config.getMinCapacityPercent()) {
 
                 CapacityAlert alert = new CapacityAlert(
                         teamName,
                         date,
-                        "LOW", // ✅ STRING (correct)
-                        "Capacity below threshold"
+                        "LOW",                      // ✅ String
+                        "Capacity below threshold" // ✅ String
                 );
 
                 alertRepo.save(alert);
