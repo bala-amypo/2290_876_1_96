@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtTokenProvider {
 
-    // ✅ REQUIRED BY TESTS
     public String generateToken(String email) {
         return "token-" + email;
     }
@@ -18,11 +17,11 @@ public class JwtTokenProvider {
         return token.replace("token-", "");
     }
 
-    public Long getUserId(String token) {   // REQUIRED
+    public Long getUserId(String token) {
         return 1L;
     }
 
-    public String getRole(String token) {    // REQUIRED
+    public String getRole(String token) {
         return "USER";
     }
 }
