@@ -1,7 +1,7 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.entity.CapacityAlert;
-import com.example.demo.entity.TeamCapacityConfig;
+import com.example.demo.model.CapacityAlert;
+import com.example.demo.model.TeamCapacityConfig;
 import com.example.demo.exception.BadRequestException;
 import com.example.demo.repository.CapacityAlertRepository;
 import com.example.demo.repository.EmployeeProfileRepository;
