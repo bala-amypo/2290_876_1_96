@@ -3,7 +3,7 @@ package com.example.demo.service;
 import com.example.demo.dto.CapacityAnalysisResultDto;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.List;
 
 public interface CapacityAnalysisService {
 
@@ -12,12 +12,10 @@ public interface CapacityAnalysisService {
             LocalDate startDate,
             LocalDate endDate
     );
+
     List<LocalDate> getOverlappingDates(
             String teamName,
-            LocalDate start,
-            LocalDate end
+            LocalDate startDate,
+            LocalDate endDate
     );
-    CapacityAnalysisResultDto analyzeTeamCapacity(String team, LocalDate start, LocalDate end);
-List<LocalDate> getOverlappingDates(String team, LocalDate start, LocalDate end);
-
 }
