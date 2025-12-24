@@ -16,22 +16,23 @@ import java.util.*;
 @Service
 public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
 
-    private final LeaveRequestRepository leaveRequestRepository;
-    private final TeamCapacityConfigRepository configRepo;
-    private final EmployeeProfileRepository employeeRepo;
-    private final CapacityAlertRepository alertRepo;
+   private final TeamCapacityConfigRepository configRepo;
+private final EmployeeProfileRepository employeeRepo;
+private final LeaveRequestRepository leaveRequestRepository;
+private final CapacityAlertRepository alertRepo;
 
-    public CapacityAnalysisServiceImpl(
-            LeaveRequestRepository leaveRequestRepository,
-            TeamCapacityConfigRepository configRepo,
-            EmployeeProfileRepository employeeRepo,
-            CapacityAlertRepository alertRepo
-    ) {
-        this.leaveRequestRepository = leaveRequestRepository;
-        this.configRepo = configRepo;
-        this.employeeRepo = employeeRepo;
-        this.alertRepo = alertRepo;
-    }
+public CapacityAnalysisServiceImpl(
+        TeamCapacityConfigRepository configRepo,
+        EmployeeProfileRepository employeeRepo,
+        LeaveRequestRepository leaveRequestRepository,
+        CapacityAlertRepository alertRepo
+) {
+    this.configRepo = configRepo;
+    this.employeeRepo = employeeRepo;
+    this.leaveRequestRepository = leaveRequestRepository;
+    this.alertRepo = alertRepo;
+}
+
 
     // 🔴 REQUIRED BY INTERFACE
     @Override
