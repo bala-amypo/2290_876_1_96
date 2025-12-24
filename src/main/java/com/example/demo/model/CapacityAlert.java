@@ -50,5 +50,17 @@ public class CapacityAlert {
     public LocalDate getDate() { return date; }
     public String getSeverity() { return severity; }
     public String getMessage() { return message; }
+    public void setTeamName(String teamName) {
+    this.teamName = teamName;
+}
+
+public void setDate(LocalDate date) {
+    this.date = date;
+}
+
+public void setMessage(String message) {
+    this.message = message;
+}
+
     
 }
