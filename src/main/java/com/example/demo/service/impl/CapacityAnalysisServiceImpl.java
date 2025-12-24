@@ -48,16 +48,13 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
         List<LocalDate> lowCapacityDates = new ArrayList<>();
 
         for (LocalDate date = start; !date.isAfter(end); date = date.plusDays(1)) {
+            double capacityPercent = headcount * 100.0 / config.getTotalHeadcount();
 
-            double capacityPercent = (headcount * 100.0) / config.getTotalHeadcount();
-
-            // ✅ BOOLEAN CONDITION — FIXED
             if (capacityPercent < config.getMinCapacityPercent()) {
-
                 CapacityAlert alert = new CapacityAlert(
                         teamName,
                         date,
-                        "LOW",               // String is OK here
+                        "LOW",                  // ✅ severity STRING
                         "Capacity below threshold"
                 );
                 alertRepo.save(alert);
