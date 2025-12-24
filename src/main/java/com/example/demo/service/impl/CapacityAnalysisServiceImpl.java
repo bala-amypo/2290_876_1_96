@@ -18,20 +18,20 @@ import java.util.*;
 @Service
 public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
 
-    @Autowired
-    LeaveRequestRepository leaveRequestRepository;
-
+    private final LeaveRequestRepository leaveRequestRepository;
     private final TeamCapacityConfigRepository configRepo;
     private final EmployeeProfileRepository employeeRepo;
     private final LeaveRequestService leaveRequestService;
     private final CapacityAlertRepository alertRepo;
 
     public CapacityAnalysisServiceImpl(
+            LeaveRequestRepository leaveRequestRepository,
             TeamCapacityConfigRepository configRepo,
             EmployeeProfileRepository employeeRepo,
             LeaveRequestService leaveRequestService,
             CapacityAlertRepository alertRepo
     ) {
+        this.leaveRequestRepository = leaveRequestRepository;
         this.configRepo = configRepo;
         this.employeeRepo = employeeRepo;
         this.leaveRequestService = leaveRequestService;
@@ -61,9 +61,9 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
                 current = current.plusDays(1);
             }
         }
-
         return result;
     }
+
     @Override
     public CapacityAnalysisResultDto analyzeTeamCapacity(
             String teamName,
@@ -74,7 +74,7 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
         TeamCapacityConfig config = configRepo
                 .findByTeamName(teamName)
                 .orElseThrow(() ->
-                        new IllegalArgumentException("Team config not found"));
+                        new IllegalArgumentException("Capacity config not found"));
 
         int total = config.getTotalHeadcount();
         int minRequired =
