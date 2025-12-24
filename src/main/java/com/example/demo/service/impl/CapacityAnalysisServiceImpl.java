@@ -1,33 +1,21 @@
-package com.example.demo.service.impl;
-
-import com.example.demo.dto.CapacityAnalysisResultDto;
-import com.example.demo.exception.BadRequestException;
-import com.example.demo.model.CapacityAlert;
-import com.example.demo.model.TeamCapacityConfig;
-import com.example.demo.repository.CapacityAlertRepository;
-import com.example.demo.repository.EmployeeProfileRepository;
-import com.example.demo.repository.TeamCapacityConfigRepository;
-import com.example.demo.service.CapacityAnalysisService;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-
 @Service
 public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
 
     private final TeamCapacityConfigRepository configRepo;
     private final EmployeeProfileRepository employeeRepo;
+    private final LeaveRequestRepository leaveRepo;
     private final CapacityAlertRepository alertRepo;
 
+    // ✅ REQUIRED BY TESTS — DO NOT CHANGE
     public CapacityAnalysisServiceImpl(
             TeamCapacityConfigRepository configRepo,
             EmployeeProfileRepository employeeRepo,
+            LeaveRequestRepository leaveRepo,
             CapacityAlertRepository alertRepo
     ) {
         this.configRepo = configRepo;
         this.employeeRepo = employeeRepo;
+        this.leaveRepo = leaveRepo;
         this.alertRepo = alertRepo;
     }
 
@@ -37,48 +25,39 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
             LocalDate startDate,
             LocalDate endDate
     ) {
-
-        if (startDate == null || endDate == null || startDate.isAfter(endDate)) {
-            throw new BadRequestException("Invalid date range");
-        }
-
         TeamCapacityConfig config = configRepo.findByTeamName(teamName)
                 .orElseThrow(() -> new BadRequestException("Capacity config not found"));
 
-        int headcount = employeeRepo.findByTeamName(teamName).size();
-        List<LocalDate> lowCapacityDates = new ArrayList<>();
+        Map<LocalDate, Integer> capacityByDate = new HashMap<>();
+        boolean risky = false;
 
-        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+        List<EmployeeProfile> employees =
+                employeeRepo.findByTeamNameAndActiveTrue(teamName);
 
-            double capacityPercent =
-                    (headcount * 100.0) / config.getTotalHeadcount();
+        for (LocalDate d = startDate; !d.isAfter(endDate); d = d.plusDays(1)) {
+            int onLeave =
+                    leaveRepo.findApprovedOnDate(d).size();
 
-            // ✅ BOOLEAN comparison — THIS IS CORRECT
-            if (capacityPercent < config.getMinCapacityPercent()) {
+            int available = employees.size() - onLeave;
+            capacityByDate.put(d, available);
 
-                CapacityAlert alert = new CapacityAlert(
-                        teamName,
-                        date,
-                        "LOW",
-                        "Capacity below threshold"
-                );
-
-                alertRepo.save(alert);
-                lowCapacityDates.add(date);
+            if (available < config.getTotalHeadcount()
+                    * config.getMinCapacityPercent() / 100) {
+                risky = true;
             }
         }
 
-        return new CapacityAnalysisResultDto(teamName, lowCapacityDates);
+        return new CapacityAnalysisResultDto(teamName, risky, capacityByDate);
     }
 
     @Override
     public List<LocalDate> getOverlappingDates(
             String teamName,
-            LocalDate startDate,
-            LocalDate endDate
+            LocalDate start,
+            LocalDate end
     ) {
         List<LocalDate> dates = new ArrayList<>();
-        for (LocalDate d = startDate; !d.isAfter(endDate); d = d.plusDays(1)) {
+        for (LocalDate d = start; !d.isAfter(end); d = d.plusDays(1)) {
             dates.add(d);
         }
         return dates;
