@@ -39,40 +39,13 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
     }
 
     @Override
-    public List<LocalDate> getOverlappingDates(
-            String teamName,
-            LocalDate start,
-            LocalDate end
-    ) {
-
-        List<LeaveRequestDto> leaves =
-                leaveRequestService.getOverlappingForTeam(teamName, start, end);
-
-        List<LocalDate> result = new ArrayList<>();
-
-        for (LeaveRequestDto dto : leaves) {
-            LocalDate current = dto.getStartDate();
-            while (!current.isAfter(dto.getEndDate())) {
-                if (!current.isBefore(start) && !current.isAfter(end)) {
-                    if (!result.contains(current)) {
-                        result.add(current);
-                    }
-                }
-                current = current.plusDays(1);
-            }
-        }
-        return result;
-    }
-
-    @Override
     public CapacityAnalysisResultDto analyzeTeamCapacity(
             String teamName,
             LocalDate startDate,
             LocalDate endDate
     ) {
 
-        TeamCapacityConfig config = configRepo
-                .findByTeamName(teamName)
+        TeamCapacityConfig config = configRepo.findByTeamName(teamName)
                 .orElseThrow(() ->
                         new IllegalArgumentException("Capacity config not found"));
 
@@ -99,9 +72,7 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
 
         LocalDate d = startDate;
         while (!d.isAfter(endDate)) {
-            int onLeave = leaveCount.getOrDefault(d, 0);
-            int available = total - onLeave;
-
+            int available = total - leaveCount.getOrDefault(d, 0);
             double capacityPercent = (available * 100.0) / total;
             capacityMap.put(d, capacityPercent);
 
