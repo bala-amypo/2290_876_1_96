@@ -1,39 +1,23 @@
 package com.example.demo.dto;
 
 import java.time.LocalDate;
-import java.util.Map;
+import java.util.List;
 
 public class CapacityAnalysisResultDto {
 
-    private boolean risky;
-    private Map<LocalDate, Double> capacityByDate;
+    private String teamName;
+    private List<LocalDate> lowCapacityDates;
 
-    // ✅ REQUIRED no-args constructor
-    public CapacityAnalysisResultDto() {
+    public CapacityAnalysisResultDto(String teamName, List<LocalDate> lowCapacityDates) {
+        this.teamName = teamName;
+        this.lowCapacityDates = lowCapacityDates;
     }
 
-    // ✅ REQUIRED by tests & service
-    public CapacityAnalysisResultDto(
-            boolean risky,
-            Map<LocalDate, Double> capacityByDate
-    ) {
-        this.risky = risky;
-        this.capacityByDate = capacityByDate;
+    public String getTeamName() {
+        return teamName;
     }
 
-    public boolean isRisky() {
-        return risky;
-    }
-
-    public void setRisky(boolean risky) {
-        this.risky = risky;
-    }
-
-    public Map<LocalDate, Double> getCapacityByDate() {
-        return capacityByDate;
-    }
-
-    public void setCapacityByDate(Map<LocalDate, Double> capacityByDate) {
-        this.capacityByDate = capacityByDate;
+    public List<LocalDate> getLowCapacityDates() {
+        return lowCapacityDates;
     }
 }
