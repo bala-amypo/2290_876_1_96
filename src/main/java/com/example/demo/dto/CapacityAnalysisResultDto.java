@@ -1,23 +1,31 @@
-package com.example.demo.dto;
-
-import java.time.LocalDate;
-import java.util.List;
-
 public class CapacityAnalysisResultDto {
 
     private String teamName;
-    private List<LocalDate> lowCapacityDates;
+    private boolean risky;
+    private Map<LocalDate, Integer> capacityByDate;
 
-    public CapacityAnalysisResultDto(String teamName, List<LocalDate> lowCapacityDates) {
+    // ✅ REQUIRED BY TESTS
+    public CapacityAnalysisResultDto(
+            String teamName,
+            boolean risky,
+            Map<LocalDate, Integer> capacityByDate
+    ) {
         this.teamName = teamName;
-        this.lowCapacityDates = lowCapacityDates;
+        this.risky = risky;
+        this.capacityByDate = capacityByDate;
     }
 
     public String getTeamName() {
         return teamName;
     }
 
-    public List<LocalDate> getLowCapacityDates() {
-        return lowCapacityDates;
+    // ✅ REQUIRED BY TESTS
+    public boolean isRisky() {
+        return risky;
+    }
+
+    // ✅ REQUIRED BY TESTS
+    public Map<LocalDate, Integer> getCapacityByDate() {
+        return capacityByDate;
     }
 }

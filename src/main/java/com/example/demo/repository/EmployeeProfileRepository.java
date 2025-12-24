@@ -4,8 +4,8 @@ import com.example.demo.model.EmployeeProfile;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+public interface EmployeeProfileRepository
+        extends JpaRepository<EmployeeProfile, Long> {
 
-public interface EmployeeProfileRepository extends JpaRepository<EmployeeProfile, Long> {
-
-    List<EmployeeProfile> findByTeamName(String teamName);
+    List<EmployeeProfile> findByTeamNameAndActiveTrue(String teamName);
 }
