@@ -1,16 +1,14 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.dto.LeaveRequestDto;
-import com.example.demo.dto.CapacityAnalysisResultDto;
-import com.example.demo.service.CapacityAnalysisService;
-import com.example.demo.service.LeaveRequestService;
-import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.example.demo.dto.CapacityAnalysisResultDto;
 import com.example.demo.model.LeaveRequest;
 import com.example.demo.model.TeamCapacityConfig;
-import com.example.demo.repository.*;
+import com.example.demo.repository.CapacityAlertRepository;
+import com.example.demo.repository.EmployeeProfileRepository;
+import com.example.demo.repository.LeaveRequestRepository;
+import com.example.demo.repository.TeamCapacityConfigRepository;
+import com.example.demo.service.CapacityAnalysisService;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -21,21 +19,46 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
     private final LeaveRequestRepository leaveRequestRepository;
     private final TeamCapacityConfigRepository configRepo;
     private final EmployeeProfileRepository employeeRepo;
-    private final LeaveRequestService leaveRequestService;
     private final CapacityAlertRepository alertRepo;
 
     public CapacityAnalysisServiceImpl(
             LeaveRequestRepository leaveRequestRepository,
             TeamCapacityConfigRepository configRepo,
             EmployeeProfileRepository employeeRepo,
-            LeaveRequestService leaveRequestService,
             CapacityAlertRepository alertRepo
     ) {
         this.leaveRequestRepository = leaveRequestRepository;
         this.configRepo = configRepo;
         this.employeeRepo = employeeRepo;
-        this.leaveRequestService = leaveRequestService;
         this.alertRepo = alertRepo;
+    }
+
+    // 🔴 REQUIRED BY INTERFACE
+    @Override
+    public List<LocalDate> getOverlappingDates(
+            String teamName,
+            LocalDate start,
+            LocalDate end
+    ) {
+
+        List<LeaveRequest> leaves =
+                leaveRequestRepository.findApprovedOverlappingForTeam(
+                        teamName, start, end);
+
+        List<LocalDate> result = new ArrayList<>();
+
+        for (LeaveRequest leave : leaves) {
+            LocalDate current = leave.getStartDate();
+            while (!current.isAfter(leave.getEndDate())) {
+                if (!current.isBefore(start) && !current.isAfter(end)) {
+                    if (!result.contains(current)) {
+                        result.add(current);
+                    }
+                }
+                current = current.plusDays(1);
+            }
+        }
+        return result;
     }
 
     @Override
@@ -45,7 +68,8 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
             LocalDate endDate
     ) {
 
-        TeamCapacityConfig config = configRepo.findByTeamName(teamName)
+        TeamCapacityConfig config = configRepo
+                .findByTeamName(teamName)
                 .orElseThrow(() ->
                         new IllegalArgumentException("Capacity config not found"));
 
@@ -72,7 +96,9 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
 
         LocalDate d = startDate;
         while (!d.isAfter(endDate)) {
-            int available = total - leaveCount.getOrDefault(d, 0);
+            int onLeave = leaveCount.getOrDefault(d, 0);
+            int available = total - onLeave;
+
             double capacityPercent = (available * 100.0) / total;
             capacityMap.put(d, capacityPercent);
 
