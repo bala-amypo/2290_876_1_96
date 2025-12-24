@@ -2,15 +2,14 @@ package com.example.demo.service.impl;
 
 import com.example.demo.dto.AuthRequest;
 import com.example.demo.dto.AuthResponse;
+import com.example.demo.dto.RegisterRequest;
 import com.example.demo.model.UserAccount;
 import com.example.demo.repository.UserAccountRepository;
 import com.example.demo.security.JwtTokenProvider;
 import com.example.demo.service.AuthService;
-import com.example.demo.dto.RegisterRequest;
 
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
-
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +20,7 @@ public class AuthServiceImpl implements AuthService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtTokenProvider tokenProvider;
 
-    // ✅ REQUIRED BY TESTS (DO NOT REMOVE ANY PARAMETER)
+    // ✅ REQUIRED BY TESTS (DO NOT CHANGE)
     public AuthServiceImpl(UserAccountRepository userAccountRepository,
                            BCryptPasswordEncoder passwordEncoder,
                            JwtTokenProvider tokenProvider) {
@@ -33,16 +32,16 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AuthResponse authenticate(AuthRequest request) {
 
-       UserAccount user = userAccountRepository
-        .findByEmail(request.getEmail())
-        .orElseThrow(() ->
-            new ResponseStatusException(
-                HttpStatus.UNAUTHORIZED,
-                "Invalid email or password"
-            )
-        );
+        UserAccount user = userAccountRepository
+                .findByEmail(request.getEmail())
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.UNAUTHORIZED,
+                                "Invalid email or password"
+                        )
+                );
 
-        // ✅ TESTS EXPECT EMAIL, NOT UserAccount OBJECT
+        // ✅ TESTS EXPECT EMAIL STRING
         String token = tokenProvider.generateToken(user.getEmail());
 
         return new AuthResponse(
@@ -51,25 +50,25 @@ public class AuthServiceImpl implements AuthService {
                 user.getRole()
         );
     }
+
     @Override
-public void register(RegisterRequest request) {
+    public void register(RegisterRequest request) {
 
-    if (userAccountRepository.findByEmail(request.getEmail()).isPresent()) {
-        throw new ResponseStatusException(
-                HttpStatus.BAD_REQUEST,
-                "Email already registered"
-        );
+        if (userAccountRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Email already registered"
+            );
+        }
+
+        UserAccount user = new UserAccount();
+        user.setUsername(request.getUsername());
+        user.setEmail(request.getEmail());
+        user.setRole(request.getRole());
+
+        // 🔐 Password MUST be hashed
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        userAccountRepository.save(user);
     }
-
-    UserAccount user = new UserAccount();
-    user.setUsername(request.getUsername());
-    user.setEmail(request.getEmail());
-    user.setRole(request.getRole());
-
-    // 🔐 Encrypt password
-    user.setPassword(passwordEncoder.encode(request.getPassword()));
-
-    userAccountRepository.save(user);
-}
-
 }
