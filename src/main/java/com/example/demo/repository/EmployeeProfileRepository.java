@@ -13,4 +13,6 @@ public interface EmployeeProfileRepository
 
     // REQUIRED BY TESTS
     List<EmployeeProfile> findByTeamNameAndActiveTrue(String teamName);
+    
+
 }
