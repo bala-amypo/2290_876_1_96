@@ -1,28 +1,20 @@
-package com.example.demo.repository;
+package com.example.demo.service;
 
-import com.example.demo.model.EmployeeProfile;
-import com.example.demo.model.LeaveRequest;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import com.example.demo.dto.CapacityAnalysisResultDto;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.*;
 
-public interface LeaveRequestRepository extends JpaRepository<LeaveRequest, Long> {
+public interface CapacityAnalysisService {
 
-    List<LeaveRequest> findByEmployee(EmployeeProfile employee);
-
-    @Query("""
-        SELECT lr FROM LeaveRequest lr
-        WHERE lr.status = 'APPROVED'
-        AND lr.employee.teamName = :teamName
-        AND lr.startDate <= :end
-        AND lr.endDate >= :start
-    """)
-    List<LeaveRequest> findApprovedOverlappingForTeam(
-            @Param("teamName") String teamName,
-            @Param("start") LocalDate start,
-            @Param("end") LocalDate end
+    CapacityAnalysisResultDto analyzeTeamCapacity(
+            String teamName,
+            LocalDate startDate,
+            LocalDate endDate
+    );
+    List<LocalDate> getOverlappingDates(
+            String teamName,
+            LocalDate start,
+            LocalDate end
     );
 }
