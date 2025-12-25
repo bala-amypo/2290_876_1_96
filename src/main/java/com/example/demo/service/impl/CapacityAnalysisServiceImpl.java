@@ -58,7 +58,7 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
         for (LocalDate d = startDate; !d.isAfter(endDate); d = d.plusDays(1)) {
 
            long leaves = leaveRepo.countApprovedLeavesOnDate(teamName, d);
-           int available = teamSize - (int) leaves;
+           int available = teamSize - leaves.intValue();
 
 
             if (total == 0) {
