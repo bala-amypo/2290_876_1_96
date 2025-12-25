@@ -20,4 +20,6 @@ public interface LeaveRequestRepository extends JpaRepository<LeaveRequest, Long
             @Param("teamName") String teamName,
             @Param("date") LocalDate date
     );
+    List<LeaveRequest> findByEmployee(EmployeeProfile employee);
+
 }
