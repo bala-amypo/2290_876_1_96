@@ -21,14 +21,13 @@ public class EmployeeProfileServiceImpl implements EmployeeProfileService {
 
     @Override
     public EmployeeProfileDto update(Long id, EmployeeProfileDto dto) {
-        EmployeeProfile e = repo.findById(id)
+        EmployeeProfile emp = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
 
-        e.setEmail(dto.getEmail());
-        e.setTeamName(dto.getTeamName());
-        e.setActive(dto.isActive());
+        emp.setTeamName(dto.getTeamName());
+        emp.setActive(dto.getActive());
 
-        return toDto(repo.save(e));
+        return toDto(repo.save(emp));
     }
 
     @Override
@@ -39,7 +38,7 @@ public class EmployeeProfileServiceImpl implements EmployeeProfileService {
     }
 
     @Override
-    public List<EmployeeProfileDto> getEmployeesByTeam(String teamName) {
+    public List<EmployeeProfileDto> getByTeam(String teamName) {
         return repo.findByTeamNameAndActiveTrue(teamName)
                 .stream()
                 .map(this::toDto)
@@ -56,19 +55,17 @@ public class EmployeeProfileServiceImpl implements EmployeeProfileService {
 
     @Override
     public void deactivate(Long id) {
-        EmployeeProfile e = repo.findById(id)
+        EmployeeProfile emp = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
-
-        e.setActive(false);
-        repo.save(e);
+        emp.setActive(false);
+        repo.save(emp);
     }
 
     private EmployeeProfileDto toDto(EmployeeProfile e) {
-        return new EmployeeProfileDto(
-                e.getId(),
-                e.getEmail(),
-                e.getTeamName(),
-                e.isActive()
-        );
+        EmployeeProfileDto dto = new EmployeeProfileDto();
+        dto.setId(e.getId());
+        dto.setTeamName(e.getTeamName());
+        dto.setActive(e.isActive());
+        return dto;
     }
 }
