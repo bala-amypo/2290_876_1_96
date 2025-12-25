@@ -1,14 +1,3 @@
-package com.example.demo.service.impl;
-
-import com.example.demo.dto.EmployeeProfileDto;
-import com.example.demo.exception.ResourceNotFoundException;
-import com.example.demo.model.EmployeeProfile;
-import com.example.demo.repository.EmployeeProfileRepository;
-import com.example.demo.service.EmployeeProfileService;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 @Service
 public class EmployeeProfileServiceImpl implements EmployeeProfileService {
 
@@ -21,11 +10,14 @@ public class EmployeeProfileServiceImpl implements EmployeeProfileService {
     @Override
     public EmployeeProfileDto create(EmployeeProfileDto dto) {
         EmployeeProfile e = new EmployeeProfile();
-        e.setName(dto.getName());
+        e.setEmployeeId(dto.getEmployeeId());
+        e.setFullName(dto.getFullName()); // ✅ FIXED
+        e.setEmail(dto.getEmail());
         e.setTeamName(dto.getTeamName());
+        e.setRole(dto.getRole());
         e.setActive(true);
-        repo.save(e);
-        return dto;
+
+        return toDto(repo.save(e));
     }
 
     @Override
@@ -33,53 +25,33 @@ public class EmployeeProfileServiceImpl implements EmployeeProfileService {
         EmployeeProfile e = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
 
-        e.setName(dto.getName());
+        e.setFullName(dto.getFullName()); // ✅ FIXED
         e.setTeamName(dto.getTeamName());
-        e.setActive(dto.isActive());
+        e.setRole(dto.getRole());
+        e.setActive(dto.getActive());
 
-        repo.save(e);
-        return dto;
+        return toDto(repo.save(e));
     }
 
     @Override
     public EmployeeProfileDto getById(Long id) {
-        EmployeeProfile e = repo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
-
-        EmployeeProfileDto dto = new EmployeeProfileDto();
-        dto.setId(e.getId());
-        dto.setName(e.getName());
-        dto.setTeamName(e.getTeamName());
-        dto.setActive(e.isActive());
-        return dto;
+        return toDto(repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found")));
     }
 
     @Override
-    public List<EmployeeProfileDto> getByTeam(String teamName) {
-        return repo.findByTeamNameAndActiveTrue(teamName)
+    public List<EmployeeProfileDto> getByTeam(String team) {
+        return repo.findByTeamNameAndActiveTrue(team)
                 .stream()
-                .map(e -> {
-                    EmployeeProfileDto dto = new EmployeeProfileDto();
-                    dto.setId(e.getId());
-                    dto.setName(e.getName());
-                    dto.setTeamName(e.getTeamName());
-                    dto.setActive(e.isActive());
-                    return dto;
-                })
+                .map(this::toDto)
                 .toList();
     }
 
     @Override
     public List<EmployeeProfileDto> getAll() {
-        return repo.findAll().stream()
-                .map(e -> {
-                    EmployeeProfileDto dto = new EmployeeProfileDto();
-                    dto.setId(e.getId());
-                    dto.setName(e.getName());
-                    dto.setTeamName(e.getTeamName());
-                    dto.setActive(e.isActive());
-                    return dto;
-                })
+        return repo.findAll()
+                .stream()
+                .map(this::toDto)
                 .toList();
     }
 
@@ -87,7 +59,19 @@ public class EmployeeProfileServiceImpl implements EmployeeProfileService {
     public void deactivate(Long id) {
         EmployeeProfile e = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
-        e.setActive(false);
+        e.deactivate();
         repo.save(e);
+    }
+
+    private EmployeeProfileDto toDto(EmployeeProfile e) {
+        EmployeeProfileDto dto = new EmployeeProfileDto();
+        dto.setId(e.getId());
+        dto.setEmployeeId(e.getEmployeeId());
+        dto.setFullName(e.getFullName()); // ✅ FIXED
+        dto.setEmail(e.getEmail());
+        dto.setTeamName(e.getTeamName());
+        dto.setRole(e.getRole());
+        dto.setActive(e.getActive());
+        return dto;
     }
 }
