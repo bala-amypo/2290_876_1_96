@@ -49,43 +49,34 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
         TeamCapacityConfig config = configRepo.findByTeamName(teamName)
                 .orElseThrow(() -> new BadRequestException("Config not found"));
 
-        int totalEmployees = employeeRepo.findByTeamNameAndActiveTrue(teamName).size();
+        int total = config.getTotalHeadcount();
+        int teamSize = employeeRepo.findByTeamNameAndActiveTrue(teamName).size();
 
-        Map<LocalDate, Integer> capacityByDate = new HashMap<>();
+        Map<LocalDate, Integer> capacityMap = new HashMap<>();
         boolean risky = false;
 
-        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+        for (LocalDate d = startDate; !d.isAfter(endDate); d = d.plusDays(1)) {
 
-            int approvedLeaves =
-                    leaveRepo.countApprovedLeavesOnDate(teamName, date);
+            int leaves = leaveRepo.countApprovedLeavesOnDate(teamName, d);
+            int available = teamSize - leaves;
 
-            int available = totalEmployees - approvedLeaves;
-            capacityByDate.put(date, available);
-
-            // 🚨 Zero headcount handled
-            if (totalEmployees == 0) {
+            if (total == 0) {
+                capacityMap.put(d, 0);
                 risky = true;
                 continue;
             }
 
-            double percent = (available * 100.0) / totalEmployees;
+            int percent = (available * 100) / total;
+            capacityMap.put(d, percent);
 
             if (percent < config.getMinCapacityPercent()) {
                 risky = true;
-
-                alertRepo.save(new CapacityAlert(
-                        teamName,
-                        date,
-                        "LOW",
-                        "Capacity below threshold"
-                ));
             }
         }
 
-        CapacityAnalysisResultDto result = new CapacityAnalysisResultDto();
+        CapacityAnalysisResultDto result =
+                new CapacityAnalysisResultDto(risky, capacityMap);
         result.setTeamName(teamName);
-        result.setCapacityByDate(capacityByDate);
-        result.setRisky(risky);
 
         return result;
     }
