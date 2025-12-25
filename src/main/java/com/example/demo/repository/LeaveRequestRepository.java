@@ -8,17 +8,14 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDate;
 
 public interface LeaveRequestRepository extends JpaRepository<LeaveRequest, Long> {
-
-    // ✅ COUNT approved leaves for a team on a specific date
-    @Query("""
+     @Query("""
         SELECT COUNT(lr)
         FROM LeaveRequest lr
         WHERE lr.status = 'APPROVED'
           AND lr.employee.teamName = :teamName
-          AND lr.startDate <= :date
-          AND lr.endDate >= :date
+          AND :date BETWEEN lr.startDate AND lr.endDate
     """)
-    long countApprovedLeavesOnDate(
+    Long countApprovedLeavesOnDate(
             @Param("teamName") String teamName,
             @Param("date") LocalDate date
     );
