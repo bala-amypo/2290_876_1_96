@@ -11,28 +11,28 @@ import java.util.List;
 
 public interface LeaveRequestRepository extends JpaRepository<LeaveRequest, Long> {
 
-    // ✅ USED BY getByEmployee()
+    // REQUIRED BY TEST: testGetLeavesByEmployee
     List<LeaveRequest> findByEmployee(EmployeeProfile employee);
 
-    // ✅ USED BY getOverlappingForTeam()
-    List<LeaveRequest>
-    findByEmployee_TeamNameAndStatusAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
-            String teamName,
-            String status,
-            LocalDate end,
-            LocalDate start
-    );
-
-    // ✅ USED BY CapacityAnalysisServiceImpl
+    // REQUIRED BY TEST: HQL overlapping
     @Query("""
-        SELECT COUNT(lr)
-        FROM LeaveRequest lr
+        SELECT lr FROM LeaveRequest lr
         WHERE lr.status = 'APPROVED'
         AND lr.employee.teamName = :team
+        AND lr.startDate <= :end
+        AND lr.endDate >= :start
+    """)
+    List<LeaveRequest> findApprovedOverlappingForTeam(
+            @Param("team") String teamName,
+            @Param("start") LocalDate start,
+            @Param("end") LocalDate end
+    );
+
+    // REQUIRED BY TEST: testHqlApprovedOnDateQuerySimulation
+    @Query("""
+        SELECT lr FROM LeaveRequest lr
+        WHERE lr.status = 'APPROVED'
         AND :date BETWEEN lr.startDate AND lr.endDate
     """)
-    long countApprovedLeavesOnDate(
-            @Param("team") String team,
-            @Param("date") LocalDate date
-    );
+    List<LeaveRequest> findApprovedOnDate(@Param("date") LocalDate date);
 }

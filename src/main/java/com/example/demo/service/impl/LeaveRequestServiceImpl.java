@@ -1,6 +1,7 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.dto.LeaveRequestDto;
+import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.model.EmployeeProfile;
 import com.example.demo.model.LeaveRequest;
@@ -19,14 +20,21 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
     private final LeaveRequestRepository leaveRepo;
     private final EmployeeProfileRepository employeeRepo;
 
-    public LeaveRequestServiceImpl(LeaveRequestRepository leaveRepo,
-                                   EmployeeProfileRepository employeeRepo) {
+    public LeaveRequestServiceImpl(
+            LeaveRequestRepository leaveRepo,
+            EmployeeProfileRepository employeeRepo
+    ) {
         this.leaveRepo = leaveRepo;
         this.employeeRepo = employeeRepo;
     }
 
     @Override
     public LeaveRequestDto create(LeaveRequestDto dto) {
+
+        if (dto.getStartDate().isAfter(dto.getEndDate())) {
+            throw new BadRequestException("Invalid date range");
+        }
+
         EmployeeProfile employee = employeeRepo.findById(dto.getEmployeeId())
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
 
@@ -35,8 +43,8 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         leave.setStartDate(dto.getStartDate());
         leave.setEndDate(dto.getEndDate());
         leave.setType(dto.getType());
-        leave.setStatus("PENDING");
         leave.setReason(dto.getReason());
+        leave.setStatus("PENDING");
 
         return mapToDto(leaveRepo.save(leave));
     }
@@ -70,11 +78,10 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
 
     @Override
     public List<LeaveRequestDto> getOverlappingForTeam(
-            String teamName, LocalDate start, LocalDate end) {
-
+            String teamName, LocalDate start, LocalDate end
+    ) {
         return leaveRepo
-                .findByEmployee_TeamNameAndStatusAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
-                        teamName, "APPROVED", end, start)
+                .findApprovedOverlappingForTeam(teamName, start, end)
                 .stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());

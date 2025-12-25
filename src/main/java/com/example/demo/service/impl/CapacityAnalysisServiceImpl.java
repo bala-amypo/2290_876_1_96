@@ -2,6 +2,7 @@ package com.example.demo.service.impl;
 
 import com.example.demo.dto.CapacityAnalysisResultDto;
 import com.example.demo.exception.BadRequestException;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.model.CapacityAlert;
 import com.example.demo.model.TeamCapacityConfig;
 import com.example.demo.repository.CapacityAlertRepository;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -37,48 +39,40 @@ public class CapacityAnalysisServiceImpl implements CapacityAnalysisService {
 
     @Override
     public CapacityAnalysisResultDto analyzeTeamCapacity(
-            String teamName,
-            LocalDate startDate,
-            LocalDate endDate
+            String team,
+            LocalDate start,
+            LocalDate end
     ) {
 
-        if (startDate == null || endDate == null || startDate.isAfter(endDate)) {
-            throw new BadRequestException("Invalid date range");
+        if (start.isAfter(end)) {
+            throw new BadRequestException("Start date must be before end date");
         }
 
-        TeamCapacityConfig config = configRepo.findByTeamName(teamName)
-                .orElseThrow(() -> new BadRequestException("Config not found"));
+        TeamCapacityConfig config = configRepo.findByTeamName(team)
+                .orElseThrow(() -> new ResourceNotFoundException("Capacity config not found"));
+
+        if (config.getTotalHeadcount() <= 0) {
+            throw new BadRequestException("Invalid total headcount");
+        }
 
         int total = config.getTotalHeadcount();
-        int teamSize = employeeRepo.findByTeamNameAndActiveTrue(teamName).size();
-
-        Map<LocalDate, Integer> capacityMap = new HashMap<>();
+        Map<LocalDate, Integer> result = new HashMap<>();
         boolean risky = false;
 
-        for (LocalDate d = startDate; !d.isAfter(endDate); d = d.plusDays(1)) {
+        for (LocalDate d = start; !d.isAfter(end); d = d.plusDays(1)) {
 
-           Long leaves = leaveRepo.countApprovedLeavesOnDate(teamName, d);
-           int available = teamSize - leaves.intValue();
-
-
-            if (total == 0) {
-                capacityMap.put(d, 0);
-                risky = true;
-                continue;
-            }
-
+            List<?> leaves = leaveRepo.findApprovedOverlappingForTeam(team, d, d);
+            int available = total - leaves.size();
             int percent = (available * 100) / total;
-            capacityMap.put(d, percent);
+
+            result.put(d, percent);
 
             if (percent < config.getMinCapacityPercent()) {
                 risky = true;
+                alertRepo.save(new CapacityAlert(team, d, "LOW", "Capacity below threshold"));
             }
         }
 
-        CapacityAnalysisResultDto result =
-                new CapacityAnalysisResultDto(risky, capacityMap);
-        result.setTeamName(teamName);
-
-        return result;
+        return new CapacityAnalysisResultDto(risky, result);
     }
 }
